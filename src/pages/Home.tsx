@@ -3,7 +3,7 @@ import { Badge, Dir } from '../components/bits'
 import { useDemos } from '../components/DemoPlayer'
 import WorldMap from '../components/WorldMap'
 import { FALL_LINE, RISE_LINE } from '../lib/colors'
-import { geocode } from '../lib/data'
+import { LIVE_VARIABLES, geocode } from '../lib/data'
 import { decimalsFor, fmt, pText, unitText } from '../lib/format'
 import { useTitle } from '../lib/hooks'
 import { matchQuestion } from '../lib/question'
@@ -33,7 +33,8 @@ export default function Home({ cat }: { cat: Catalog }) {
   async function investigate(e?: React.FormEvent) {
     e?.preventDefault()
     if (match) {
-      const v = match.variables[0]
+      const avail = (rid?: string) => match.variables.filter((x) => (rid ? cat.results[rid]?.[x] : LIVE_VARIABLES.includes(x)))
+      const v = avail(match.region ?? region)[0]
       if (match.region) {
         if (v) navigate(['trend', match.region, v])
         else navigate(['explore', match.region], { topic: match.topic })
@@ -44,7 +45,7 @@ export default function Home({ cat }: { cat: Catalog }) {
         try {
           const g = await geocode(match.placeText)
           if (g) {
-            navigate(['anywhere'], { lat: g.lat.toFixed(3), lon: g.lon.toFixed(3), name: g.name, v })
+            navigate(['anywhere'], { lat: g.lat.toFixed(3), lon: g.lon.toFixed(3), name: g.name, v: avail()[0] })
             return
           }
           setNote(`Couldn't find a place called "${match.placeText}". Try a featured region or click the map.`)

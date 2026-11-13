@@ -212,6 +212,7 @@ function TrendView({ cat, place, vid, query }: { cat: Catalog; place: Place; vid
               : 'This product is made once a year, so there is no seasonal cycle to remove. Each dot is one year.'}{' '}
             Hover the chart to read exact values.
           </p>
+          <YearTable a={a} full={full} meta={meta} />
         </div>
       </section>
 
@@ -309,6 +310,45 @@ function TrendView({ cat, place, vid, query }: { cat: Catalog; place: Place; vid
         </div>
       </section>
     </>
+  )
+}
+
+function YearTable({ a, full, meta }: { a: Analysis; full: Analysis; meta: VariableMeta }) {
+  const d = Math.max(meta.decimals, 1)
+  return (
+    <details className="method" style={{ marginTop: 14 }}>
+      <summary>Table of yearly values</summary>
+      <div className="table-scroll" style={{ maxHeight: 360, overflowY: 'auto' }}>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th className="num">Yearly value{unitText(meta) ? ` (${meta.unit === '%' ? '%' : unitText(meta).trim()})` : ''}</th>
+              <th className="num">Trend line</th>
+              <th className="num">Difference</th>
+            </tr>
+          </thead>
+          <tbody>
+            {full.annualYears.map((y, i) => {
+              const v = full.annual[i]
+              const used = y >= a.first && y <= a.last
+              const tl = a.sen.intercept + a.sen.slope * (y + 0.5)
+              return (
+                <tr key={y} style={used ? undefined : { color: 'var(--faint)' }}>
+                  <td className="num" style={{ textAlign: 'left' }}>
+                    {y}
+                    {used ? '' : ' (not used)'}
+                  </td>
+                  <td className="num">{fmt(v, d)}</td>
+                  <td className="num">{used ? fmt(tl, d) : '–'}</td>
+                  <td className="num">{used && Number.isFinite(v) ? fmt(v - tl, d, true) : '–'}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </details>
   )
 }
 

@@ -64,11 +64,13 @@ export default function Compare({ cat, variable, a, b }: Props) {
             <label className="field">
               <span>Variable</span>
               <select value={vid} onChange={(e) => navigate(['compare', e.target.value, ra, rb])}>
-                {Object.entries(cat.variables).map(([id, v]) => (
-                  <option key={id} value={id}>
-                    {v.name}
-                  </option>
-                ))}
+                {Object.entries(cat.variables)
+                  .filter(([id]) => ids.some((r) => cat.results[r]?.[id]))
+                  .map(([id, v]) => (
+                    <option key={id} value={id}>
+                      {v.name}
+                    </option>
+                  ))}
               </select>
             </label>
             <label className="field">
@@ -109,7 +111,7 @@ export default function Compare({ cat, variable, a, b }: Props) {
             </div>
             <p className="small muted" style={{ maxWidth: '50ch' }}>
               Found automatically from the published results: both trends significant, one rising and one falling, over the same years.{' '}
-              {nPairs} region pairs across {opposites.length} of {Object.keys(cat.variables).length} variables.
+              {nPairs} region pairs across {opposites.length} of {Object.keys(cat.variables).filter((v) => ids.some((r) => cat.results[r]?.[v])).length} variables.
             </p>
           </div>
           <div className="table-scroll">

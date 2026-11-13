@@ -1,7 +1,7 @@
 import { useTitle } from '../lib/hooks'
 import type { Catalog } from '../lib/types'
 
-const DATASETS: { name: string; vars: string; via: string; detail: string; cite: string; url: string }[] = [
+const DATASETS: { name: string; vars: string; via: string; detail: string; cite: string; url: string; needs?: string }[] = [
   {
     name: 'MERRA-2 reanalysis',
     vars: 'Air temperature, rainfall, root-zone soil wetness, land evaporation',
@@ -20,6 +20,7 @@ const DATASETS: { name: string; vars: string; via: string; detail: string; cite:
   },
   {
     name: 'MODIS Terra MOD13Q1 v061',
+    needs: 'ndvi',
     vars: 'Vegetation greenness (NDVI)',
     via: 'ORNL DAAC MODIS web service',
     detail: '250 m, 16-day composites → monthly maximum, 2001–2025, nine 2 × 2 km sites per region',
@@ -115,7 +116,7 @@ export default function Sources({ cat }: { cat: Catalog }) {
                 </tr>
               </thead>
               <tbody>
-                {DATASETS.map((d) => (
+                {DATASETS.filter((d) => !d.needs || Object.values(cat.results).some((r) => r[d.needs!])).map((d) => (
                   <tr key={d.name}>
                     <td style={{ minWidth: 180 }}>
                       <a href={d.url} target="_blank" rel="noreferrer">

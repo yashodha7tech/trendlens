@@ -75,7 +75,7 @@ export function Footer({ generated }: { generated?: string }) {
               <a href="https://modis.ornl.gov/data/modis_webservice.html" target="_blank" rel="noreferrer">
                 MODIS via ORNL DAAC
               </a>{' '}
-              (MOD13Q1, MOD44B)
+              (MODIS Terra)
             </li>
             <li>
               <a href="https://www.ncei.noaa.gov/cdo-web/" target="_blank" rel="noreferrer">

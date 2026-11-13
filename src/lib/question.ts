@@ -37,6 +37,7 @@ export interface QuestionMatch {
 export function matchQuestion(q: string): QuestionMatch {
   const s = q.toLowerCase()
   const variables = VAR_WORDS.filter(([re]) => re.test(s)).map(([, v]) => v)
+  if (variables.includes('ndvi') && !variables.includes('tree')) variables.push('tree') // fallback when greenness is unavailable
   const region = PLACE_WORDS.find(([re]) => re.test(s))?.[1]
   // anything after "in"/"over"/"near"/"around" is treated as a place name for the geocoder
   const m = q.match(/\b(?:in|over|near|around|at|for)\s+([A-Z][\w\s.'-]{1,60}|[a-z][\w\s.'-]{2,60})\??$/)

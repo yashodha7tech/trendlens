@@ -25,10 +25,14 @@ station), a practice lab with synthetic data, CSV export, share links and citati
 |---|---|---|---|
 | Air temperature, rainfall, root-zone soil wetness, land evaporation | MERRA-2 (NASA GMAO) | NASA POWER API | 1981–2025 |
 | Sunlight reaching the ground, aerosol optical depth | CERES SYN1deg (NASA LaRC; MODIS aerosols assimilated) | NASA POWER API | 2001–2025 |
-| Vegetation greenness (NDVI) | MODIS Terra MOD13Q1 v061 | ORNL DAAC MODIS web service | 2001–2025 |
 | Tree cover | MODIS Terra MOD44B v061 | ORNL DAAC MODIS web service | 2000–2025 |
 | Station temperature and precipitation (cross-check) | NOAA GSOM | NOAA NCEI Climate Data Online | 1981–2025 |
 | Map imagery | Blue Marble, MODIS Terra true colour, borders | NASA GIBS | — |
+
+Vegetation greenness (NDVI, MODIS MOD13Q1) is wired into the pipeline (`pipeline/modis.py`) but not
+yet in the published data: the ORNL DAAC service returns 10 composites per request at roughly
+30 seconds each and throttles parallel requests, so 25 years for 54 sample sites takes many hours.
+Run `modis.py` to completion and `build.py` adds NDVI everywhere in the app automatically.
 
 Challenge resources used: **Climate Data Online** (station cross-check, cached and live),
 **Acker et al. (2009), SeaWiFS chlorophyll time-series analysis** (the monthly-anomaly →
@@ -93,7 +97,7 @@ Rebuild the data (optional; the repository already contains the processed data):
 ```bash
 cd pipeline
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-.venv/bin/python modis.py      # slow: the ORNL service answers ~30 s per request
+.venv/bin/python modis.py      # slow: ~30 s per request and rate-limited; resumable
 .venv/bin/python build.py      # POWER and CDO downloads are cached in pipeline/cache/
 .venv/bin/python -m pytest -q
 .venv/bin/python simulate.py   # public/data/validation.json
