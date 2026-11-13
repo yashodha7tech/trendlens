@@ -51,12 +51,9 @@ const OverlayTileLayer = L.TileLayer.extend({
     const img = document.createElement('img')
     img.alt = ''
     img.setAttribute('role', 'presentation')
-    // GIBS occasionally answers 500 for a tile that loads fine a moment later: retry twice
-    const get = (tries: number): Promise<ArrayBuffer> =>
-      fetch(this.getTileUrl(coords), { mode: 'cors' }).then((r) =>
-        r.ok ? r.arrayBuffer() : tries > 0 ? new Promise((ok) => setTimeout(ok, 600)).then(() => get(tries - 1)) : Promise.reject(new Error(String(r.status))),
-      )
-    get(2)
+    // GIBS sometimes answers 500 instead of its empty placeholder; either way the tile stays transparent
+    fetch(this.getTileUrl(coords), { mode: 'cors' })
+      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
       .then((buf) => {
         const b = new Uint8Array(buf)
         const png = b[0] === 0x89 && b[1] === 0x50
@@ -83,7 +80,8 @@ const OverlayTileLayer = L.TileLayer.extend({
 
 /** Country borders and coastlines drawn above the data. */
 export function referenceLayers(pane: string) {
-  return [new OverlayTileLayer(`${GIBS}/Reference_Features_15m/default/GoogleMapsCompatible_Level13/{z}/{y}/{x}.png`, { maxNativeZoom: 13, maxZoom: 13, pane })]
+  // the layer has no features below zoom 3, so don't request those tiles at all
+  return [new OverlayTileLayer(`${GIBS}/Reference_Features_15m/default/GoogleMapsCompatible_Level13/{z}/{y}/{x}.png`, { minZoom: 3, maxNativeZoom: 13, maxZoom: 13, pane })]
 }
 
 export const bboxBounds = (b: [number, number, number, number]) => L.latLngBounds([b[0], b[2]], [b[1], b[3]])
