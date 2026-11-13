@@ -1,0 +1,35 @@
+{
+  "name": "trendlens",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Cosmosis TrendLens: become an Earth system trend detective with NASA data.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "data": "cd pipeline && .venv/bin/python build.py"
+  },
+  "dependencies": {
+    "@fontsource/dm-mono": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "d3-scale": "^4.0.3",
+    "d3-shape": "^3.2.1",
+    "leaflet": "^1.9.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.2.0",
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^22.20.5",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "~5.6",
+    "vite": "^6.4.6",
+    "vitest": "^3.2.7"
+  }
+}

@@ -1,0 +1,140 @@
+{
+ "runs": 2000,
+ "false_alarm": [
+  {
+   "n": 25,
+   "phi": 0.0,
+   "none": 0.0525,
+   "hamed_rao": 0.0895,
+   "ar1": 0.041
+  },
+  {
+   "n": 25,
+   "phi": 0.2,
+   "none": 0.097,
+   "hamed_rao": 0.1215,
+   "ar1": 0.0535
+  },
+  {
+   "n": 25,
+   "phi": 0.4,
+   "none": 0.1545,
+   "hamed_rao": 0.177,
+   "ar1": 0.0665
+  },
+  {
+   "n": 25,
+   "phi": 0.6,
+   "none": 0.2805,
+   "hamed_rao": 0.258,
+   "ar1": 0.0965
+  },
+  {
+   "n": 45,
+   "phi": 0.0,
+   "none": 0.0515,
+   "hamed_rao": 0.0845,
+   "ar1": 0.043
+  },
+  {
+   "n": 45,
+   "phi": 0.2,
+   "none": 0.098,
+   "hamed_rao": 0.131,
+   "ar1": 0.0485
+  },
+  {
+   "n": 45,
+   "phi": 0.4,
+   "none": 0.19,
+   "hamed_rao": 0.176,
+   "ar1": 0.063
+  },
+  {
+   "n": 45,
+   "phi": 0.6,
+   "none": 0.299,
+   "hamed_rao": 0.2155,
+   "ar1": 0.071
+  }
+ ],
+ "power": [
+  {
+   "n": 25,
+   "phi": 0.0,
+   "slope": 0.04,
+   "none": 0.2645,
+   "hamed_rao": 0.3105,
+   "ar1": 0.2245
+  },
+  {
+   "n": 25,
+   "phi": 0.2,
+   "slope": 0.04,
+   "none": 0.269,
+   "hamed_rao": 0.3,
+   "ar1": 0.1745
+  },
+  {
+   "n": 25,
+   "phi": 0.4,
+   "slope": 0.04,
+   "none": 0.3255,
+   "hamed_rao": 0.338,
+   "ar1": 0.149
+  },
+  {
+   "n": 25,
+   "phi": 0.6,
+   "slope": 0.04,
+   "none": 0.3765,
+   "hamed_rao": 0.343,
+   "ar1": 0.133
+  },
+  {
+   "n": 45,
+   "phi": 0.0,
+   "slope": 0.04,
+   "none": 0.9095,
+   "hamed_rao": 0.9055,
+   "ar1": 0.885
+  },
+  {
+   "n": 45,
+   "phi": 0.2,
+   "slope": 0.04,
+   "none": 0.863,
+   "hamed_rao": 0.8555,
+   "ar1": 0.7265
+  },
+  {
+   "n": 45,
+   "phi": 0.4,
+   "slope": 0.04,
+   "none": 0.778,
+   "hamed_rao": 0.722,
+   "ar1": 0.503
+  },
+  {
+   "n": 45,
+   "phi": 0.6,
+   "slope": 0.04,
+   "none": 0.683,
+   "hamed_rao": 0.5415,
+   "ar1": 0.264
+  }
+ ],
+ "recovery": {
+  "true_per_decade": 0.3,
+  "mean_per_decade": 0.2967,
+  "coverage": 0.952,
+  "runs": 500
+ },
+ "agreement": {
+  "series": 300,
+  "max_diff_p_original": 0.0,
+  "max_diff_p_hamed_rao": 0.0,
+  "max_diff_sen_slope": 0.0,
+  "max_diff_sen_interval": 0.0
+ }
+}
