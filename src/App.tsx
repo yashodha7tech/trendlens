@@ -14,6 +14,26 @@ import Method from './pages/Method'
 import Sources from './pages/Sources'
 import Trend from './pages/Trend'
 
+function NotFound() {
+  return (
+    <div className="page-head" style={{ borderBottom: 0, paddingBottom: 80 }}>
+      <div className="wrap">
+        <span className="eyebrow">404</span>
+        <h1 style={{ marginTop: 12 }}>No trend here</h1>
+        <p className="lede">This page does not exist. Start a new investigation instead.</p>
+        <div style={{ display: 'flex', gap: 10, marginTop: 22, flexWrap: 'wrap' }}>
+          <a className="btn arrow" href="#/">
+            Home
+          </a>
+          <a className="btn ghost" href="#/explore">
+            Explore regions
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const route = useRoute()
   const cat = useAsync(loadCatalog, [])
@@ -56,7 +76,7 @@ export default function App() {
         page = <Sources cat={c} />
         break
       default:
-        page = <ErrorBox message="This page does not exist." />
+        page = <NotFound />
     }
   }
 

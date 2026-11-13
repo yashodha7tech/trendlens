@@ -142,9 +142,16 @@ export default function Home({ cat }: { cat: Catalog }) {
                 <button className="btn light arrow" type="submit">
                   Find what's changing
                 </button>
-                <a className="btn ghost on-dark" href="#demos">
+                <button
+                  type="button"
+                  className="btn ghost on-dark"
+                  onClick={() => {
+                    const el = document.getElementById('demos')
+                    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' })
+                  }}
+                >
                   Watch a demo
-                </a>
+                </button>
               </div>
             </form>
           </div>

@@ -51,8 +51,12 @@ const OverlayTileLayer = L.TileLayer.extend({
     const img = document.createElement('img')
     img.alt = ''
     img.setAttribute('role', 'presentation')
-    fetch(this.getTileUrl(coords), { mode: 'cors' })
-      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+    // GIBS occasionally answers 500 for a tile that loads fine a moment later: retry twice
+    const get = (tries: number): Promise<ArrayBuffer> =>
+      fetch(this.getTileUrl(coords), { mode: 'cors' }).then((r) =>
+        r.ok ? r.arrayBuffer() : tries > 0 ? new Promise((ok) => setTimeout(ok, 600)).then(() => get(tries - 1)) : Promise.reject(new Error(String(r.status))),
+      )
+    get(2)
       .then((buf) => {
         const b = new Uint8Array(buf)
         const png = b[0] === 0x89 && b[1] === 0x50
