@@ -33,22 +33,24 @@ function DemoBar({ demo, step, setStep }: { demo: Demo; step: number; setStep: (
   const [progress, setProgress] = useState(0)
   const s = demo.steps[step]
   const last = step === demo.steps.length - 1
-  const t0 = useRef(performance.now())
+  const done = useRef(0) // fraction of the current step already shown
+  const next = useRef(setStep)
+  next.current = setStep
 
   // go to the step's screen and highlight the element it talks about
   useEffect(() => {
-    if (window.location.hash !== s.to) window.location.hash = s.to
-    t0.current = performance.now()
+    done.current = 0
     setProgress(0)
-    let el: Element | null = null
+    if (window.location.hash !== s.to) window.location.hash = s.to
     let tries = 0
     const find = window.setInterval(() => {
-      el = s.highlight ? document.querySelector(s.highlight) : null
+      const el = s.highlight ? document.querySelector(s.highlight) : null
       if (el || ++tries > 40) {
         window.clearInterval(find)
         if (el) {
           el.classList.add('demo-highlight')
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          // keep the element's top just under the sticky header, clear of the caption bar
+          window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 84, behavior: 'smooth' })
         }
       }
     }, 100)
@@ -58,21 +60,22 @@ function DemoBar({ demo, step, setStep }: { demo: Demo; step: number; setStep: (
     }
   }, [s])
 
+  // auto-advance; pausing keeps the progress made so far
   useEffect(() => {
     if (paused) return
     const ms = s.ms ?? STEP_MS
-    t0.current = performance.now() - progress * ms
+    const start = performance.now() - done.current * ms
     const id = window.setInterval(() => {
-      const p = (performance.now() - t0.current) / ms
+      const p = Math.min(1, (performance.now() - start) / ms)
+      done.current = p
+      setProgress(p)
       if (p >= 1) {
         window.clearInterval(id)
-        if (!last) setStep(step + 1)
-        else setProgress(1)
-      } else setProgress(p)
+        if (!last) next.current(step + 1)
+      }
     }, 50)
     return () => window.clearInterval(id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paused, step, s])
+  }, [paused, step, s, last])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

@@ -25,6 +25,8 @@ export default function Home({ cat }: { cat: Catalog }) {
   const [q, setQ] = useState('')
   const [note, setNote] = useState('')
   const regions = cat.regions
+  const liveVars = Object.keys(cat.variables).filter((v) => Object.values(cat.results).some((r) => r[v]))
+  const nWord = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][liveVars.length] ?? String(liveVars.length)
 
   const match = useMemo(() => (q.trim().length > 3 ? matchQuestion(q) : null), [q])
 
@@ -77,7 +79,7 @@ export default function Home({ cat }: { cat: Catalog }) {
             <span className="eyebrow">NASA Space Apps 2026 · Earth System Trend Detective</span>
             <h1>Is it really changing?</h1>
             <p className="lede">
-              Pick a place and a question. TrendLens scans eight NASA Earth variables, ranks what has changed since 1981, and tells you honestly
+              Pick a place and a question. TrendLens scans {nWord} NASA Earth variables, ranks what has changed since 1981, and tells you honestly
               whether each change is statistically significant or could still be chance.
             </p>
             <form className="ask" onSubmit={investigate}>
@@ -238,14 +240,16 @@ export default function Home({ cat }: { cat: Catalog }) {
           <div className="section-head">
             <div>
               <span className="eyebrow">The clues</span>
-              <h2>Eight variables from NASA satellites and models</h2>
+              <h2>
+                {nWord[0].toUpperCase() + nWord.slice(1)} variables from NASA satellites and models
+              </h2>
             </div>
             <a className="btn ghost small arrow" href="#/sources">
               Datasets and citations
             </a>
           </div>
           <div className="grid-4">
-            {Object.entries(cat.variables).map(([id, v]) => (
+            {liveVars.map((id) => [id, cat.variables[id]] as const).map(([id, v]) => (
               <div className="var-card" key={id}>
                 <span className="eyebrow">{cat.topics[v.topic]}</span>
                 <h4>{v.name}</h4>

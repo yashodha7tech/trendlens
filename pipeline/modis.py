@@ -149,7 +149,7 @@ def main(workers: int = 12) -> None:
                 fut.result()
             except Exception as e:  # keep going; a re-run picks up failures
                 print("FAILED", futs[fut][0], futs[fut][1]["id"], e, flush=True)
-            if done % 20 == 0 or done == len(todo):
+            if done % 5 == 0 or done == len(todo):
                 rate = done / (time.time() - t0)
                 print(f"{done}/{len(todo)}  {rate*60:.1f}/min  eta {(len(todo)-done)/max(rate,1e-9)/60:.0f} min", flush=True)
 
