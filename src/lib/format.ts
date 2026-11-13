@@ -99,7 +99,7 @@ export function sentence(a: Analysis, meta: VariableMeta, place: string): string
   const r = rate(a, meta)
   const v = meta.name
   const mag = r.value.replace(/^[+−]/, '')
-  const pct = r.ofAverage ? ` (${r.ofAverage.replace(/^[+−]/, '').replace('of average', 'of its average')})` : ''
+  const pct = r.ofAverage ? `, or ${r.ofAverage.replace(/^[+−]/, '').replace('of average', 'of its average')}` : ''
   const per = `${mag}${unitLong(meta)} per decade${pct}`
   if (a.verdict === 'significant')
     return `${v} in ${place} is ${dirWord(a.sen.slope)} by about ${per} (95% interval ${r.low} to ${r.high}). This is unlikely to be chance (${pText(a.mk.p)}).`

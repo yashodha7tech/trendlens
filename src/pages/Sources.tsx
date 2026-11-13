@@ -182,7 +182,9 @@ export default function Sources({ cat }: { cat: Catalog }) {
             <span className="eyebrow">Variables</span>
             <h3 style={{ margin: '10px 0 12px' }}>Plain-language definitions</h3>
             <dl className="kv">
-              {Object.values(cat.variables).map((v) => (
+              {Object.entries(cat.variables)
+                .filter(([id]) => Object.values(cat.results).some((r) => r[id]))
+                .map(([, v]) => (
                 <div key={v.name} style={{ display: 'contents' }}>
                   <dt>{v.short}</dt>
                   <dd className="small">
