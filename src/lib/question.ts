@@ -6,25 +6,25 @@ import type { TopicId } from './types'
  */
 
 const VAR_WORDS: [RegExp, string][] = [
-  [/\b(rain|rainfall|precip\w*|monsoon|wet(ter)?|storms?|showers?)\b/, 'precip'],
-  [/\b(drought|dry(ing|er)?|soil|moisture)\b/, 'soil'],
-  [/\b(evapo\w*|evaporat\w*|transpiration|water vapou?r loss)\b/, 'evap'],
-  [/\b(hot(ter)?|heat|warm(ing|er)?|temperature|cold(er)?|cool(ing|er)?|climate)\b/, 't2m'],
-  [/\b(green(ing|er|ness)?|brown(ing)?|vegetation|plants?|crops?|ndvi|leaf|leaves|grass)\b/, 'ndvi'],
-  [/\b(forests?|trees?|deforest\w*|logging|canopy|jungle)\b/, 'tree'],
-  [/\b(pollut\w*|haz[ey]|smog|aerosols?|smoke|dust|air quality|particles?|aod|fires?|burning)\b/, 'aod'],
-  [/\b(sun|sunny|sunlight|sunshine|solar|dimming|brightening|radiation|cloud(s|y)?)\b/, 'sun'],
+  [/\b(rain(s|y|ier|fall)?|precip\w*|monsoons?|wet(ter)?|storms?|showers?|flood\w*)\b/, 'precip'],
+  [/\b(droughts?|dry(ing)?|drier|soils?|moisture)\b/, 'soil'],
+  [/\b(evapo\w*|evaporat\w*|transpiration)\b/, 'evap'],
+  [/\b(hot(ter|test)?|heat(ing|waves?)?|warm(ing|er|est)?|temperatures?|cold(er)?|cool(ing|er)?|climate)\b/, 't2m'],
+  [/\b(green(ing|er|ness)?|brown(ing|er)?|vegetation|plants?|crops?|ndvi|leaf|leaves|grass(land)?s?)\b/, 'ndvi'],
+  [/\b(forests?|trees?|deforest\w*|logging|canopy|jungles?)\b/, 'tree'],
+  [/\b(pollut\w*|haz(e|y|ier|iness)|smog\w*|aerosols?|smok(e|y|ier)|dust(y|ier)?|air quality|particles?|particulates?|aod|fires?|burning)\b/, 'aod'],
+  [/\b(sun(ny|nier)?|sunlight|sunshine|solar|dimm(ing|er)|bright(ening|er)|radiation|cloud(s|y|ier|iness)?)\b/, 'sun'],
 ]
 
 const TOPIC_OF: Record<string, TopicId> = { t2m: 'heat', precip: 'water', soil: 'water', evap: 'water', ndvi: 'vegetation', tree: 'vegetation', aod: 'air', sun: 'air' }
 
 const PLACE_WORDS: [RegExp, string][] = [
-  [/\b(sahel|niger|niamey|chad|mali|burkina|sahara|west africa|nigeria|kano)\b/, 'sahel'],
-  [/\b(india|indian|ganges|gangetic|ganga|uttar pradesh|bihar|lucknow|patna|varanasi|kanpur|delhi|agra)\b/, 'igp'],
+  [/\b(sahel|niger|niamey|zinder|maradi|northern nigeria|kano|sokoto)\b/, 'sahel'],
+  [/\b(india|indian|ganges|gangetic|ganga|uttar pradesh|bihar|lucknow|patna|varanasi|kanpur|agra|prayagraj|allahabad)\b/, 'igp'],
   [/\b(china|chinese|beijing|tianjin|hebei|shandong|henan|north china)\b/, 'ncp'],
-  [/\b(amazon\w*|brazil\w*|rondonia|rondônia|mato grosso|pará)\b/, 'samazon'],
-  [/\b(arizona|new mexico|utah|colorado|four corners|southwest|south-west|phoenix|albuquerque|las vegas|lake mead|lake powell|usa|united states)\b/, 'swus'],
-  [/\b(canada|canadian|alberta|saskatchewan|prairies?|calgary|edmonton|regina|saskatoon)\b/, 'prairies'],
+  [/\b(amazon\w*|rondonia|rondônia|mato grosso|pará|cuiab[aá])\b/, 'samazon'],
+  [/\b(arizona|new mexico|utah|colorado|four corners|southwest|south-west|phoenix|tucson|albuquerque|santa fe|lake powell)\b/, 'swus'],
+  [/\b(canadian prairies?|prairies?|alberta|saskatchewan|edmonton|regina|saskatoon|red deer)\b/, 'prairies'],
 ]
 
 export interface QuestionMatch {
