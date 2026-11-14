@@ -5,18 +5,42 @@ import type { TopicId } from './types'
  * Plain keyword matching: transparent, predictable and fast.
  */
 
+// Order matters: the first variable that matches is the one a question opens. Specific words
+// come before general ones, so "heatwaves" opens hottest-day temperature before air temperature,
+// "cloudier" opens cloud cover before sunlight and "the air is getting drier" opens humidity.
 const VAR_WORDS: [RegExp, string][] = [
   [/\b(rain(s|y|ier|fall)?|precip\w*|monsoons?|wet(ter)?|storms?|showers?|flood\w*)\b/, 'precip'],
+  [/\b(humid\w*|mugg(y|ier|iest|iness)|sultr(y|ier)|stick(y|ier)|dew|water vapou?r|damp(er|ness)?|(dry|drier|dryer) air|air( is| getting| becoming| turning)* (dry|drier|dryer))\b/, 'humidity'],
   [/\b(droughts?|dry(ing)?|drier|soils?|moisture)\b/, 'soil'],
   [/\b(evapo\w*|evaporat\w*|transpiration)\b/, 'evap'],
+  [/\b(hottest|heat ?waves?|extreme heat|scorch\w*|swelter\w*|hot (days?|spells?|afternoons?)|peak (heat|temperatures?)|max(imum)? temperatures?|highest temperatures?|record (heat|highs?))\b/, 'tmax'],
   [/\b(hot(ter|test)?|heat(ing|waves?)?|warm(ing|er|est)?|temperatures?|cold(er)?|cool(ing|er)?|climate)\b/, 't2m'],
   [/\b(green(ing|er|ness)?|brown(ing|er)?|vegetation|plants?|crops?|ndvi|leaf|leaves|grass(land)?s?)\b/, 'ndvi'],
   [/\b(forests?|trees?|deforest\w*|logging|canopy|jungles?)\b/, 'tree'],
   [/\b(pollut\w*|haz(e|y|ier|iness)|smog\w*|aerosols?|smok(e|y|ier)|dust(y|ier)?|air quality|particles?|particulates?|aod|fires?|burning)\b/, 'aod'],
+  [/\b(cloud(s|y|ier|iest|iness)?|overcast)\b/, 'cloud'],
   [/\b(sun(ny|nier)?|sunlight|sunshine|solar|dimm(ing|er)|bright(ening|er)|radiation|cloud(s|y|ier|iness)?)\b/, 'sun'],
+  [/\b(wind(s|y|ier|iest|iness)?|breez(e|es|y|ier)|gust(s|y|ier)?|gales?|stilling)\b/, 'wind'],
 ]
 
-const TOPIC_OF: Record<string, TopicId> = { t2m: 'heat', precip: 'water', soil: 'water', evap: 'water', ndvi: 'vegetation', tree: 'vegetation', aod: 'air', sun: 'air' }
+const TOPIC_OF: Record<string, TopicId> = {
+  t2m: 'heat',
+  tmax: 'heat',
+  precip: 'water',
+  soil: 'water',
+  evap: 'water',
+  humidity: 'water',
+  ndvi: 'vegetation',
+  tree: 'vegetation',
+  aod: 'air',
+  sun: 'air',
+  cloud: 'air',
+  wind: 'air',
+}
+
+/** Every variable a question can point to, with its topic (checked against the catalog in tests). */
+export const QUESTION_TOPICS: Readonly<Record<string, TopicId>> = TOPIC_OF
+export const QUESTION_VARIABLES: readonly string[] = [...new Set(VAR_WORDS.map(([, v]) => v))]
 
 const PLACE_WORDS: [RegExp, string][] = [
   [/\b(sahel|niger|niamey|zinder|maradi|northern nigeria|kano|sokoto)\b/, 'sahel'],

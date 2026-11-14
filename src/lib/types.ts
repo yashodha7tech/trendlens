@@ -12,6 +12,10 @@ export interface VariableMeta {
   start: number
   land_only: boolean
   agg: 'mean' | 'annual'
+  /** General, non-causal note on what can push this variable in opposite directions in two regions. */
+  contrast?: string
+  /** Chart value-axis label when the unit alone is ambiguous ("% of sky" rather than "% of ground"). */
+  axis?: string
 }
 
 export interface RegionMeta {
