@@ -1,13 +1,38 @@
 import { useMemo, useState } from 'react'
-import { ErrorBox } from '../components/bits'
+import { Dir, ErrorBox } from '../components/bits'
+import GlobeLoader, { featuredRegions, parseLatLon, prefersReducedMotion, webglSupported } from '../components/GlobeLoader'
 import Radar, { rankItems } from '../components/Radar'
 import WorldMap from '../components/WorldMap'
 import { analyzeSeries, formatLatLon, geocode, loadPoint } from '../lib/data'
-import { sentence } from '../lib/format'
+import { rate, sentence, unitText } from '../lib/format'
 import { useAsync, useTitle } from '../lib/hooks'
 import { href, navigate } from '../lib/router'
 import type { Analysis } from '../lib/stats'
-import type { Catalog } from '../lib/types'
+import type { Catalog, Place } from '../lib/types'
+
+type View = 'globe' | 'map'
+const VIEW_KEY = 'trendlens.anywhere.view'
+
+function startView(): View {
+  if (!webglSupported()) return 'map'
+  try {
+    return localStorage.getItem(VIEW_KEY) === 'map' ? 'map' : 'globe'
+  } catch {
+    return 'globe'
+  }
+}
+
+/** One analysis per fetched place, shared by the result card and the radar. */
+const analysesCache = new WeakMap<Place, Record<string, Analysis>>()
+function analysesFor(p: Place): Record<string, Analysis> {
+  let out = analysesCache.get(p)
+  if (!out) {
+    out = {}
+    for (const [vid, s] of Object.entries(p.series)) out[vid] = analyzeSeries(s)
+    analysesCache.set(p, out)
+  }
+  return out
+}
 
 export default function Anywhere({ cat, query }: { cat: Catalog; query: URLSearchParams }) {
   const lat = query.get('lat') !== null ? Number(query.get('lat')) : null
@@ -18,10 +43,33 @@ export default function Anywhere({ cat, query }: { cat: Catalog; query: URLSearc
   useTitle(has ? `Anywhere · ${name ?? formatLatLon(lat!, lon!)}` : 'Anywhere')
   const [q, setQ] = useState('')
   const [msg, setMsg] = useState('')
+  const canGlobe = webglSupported()
+  const [view, setView] = useState<View>(startView)
+  const [globeNote, setGlobeNote] = useState('')
+  const regions = useMemo(() => featuredRegions(cat), [cat])
+  const point = useMemo<[number, number] | null>(() => (has ? [lat!, lon!] : null), [has, lat, lon])
+  const coarse = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+
+  function choose(v: View) {
+    setView(v)
+    setGlobeNote('')
+    try {
+      localStorage.setItem(VIEW_KEY, v)
+    } catch {
+      /* storage unavailable: the choice lasts for this visit only */
+    }
+  }
+
+  const pick = (la: number, lo: number) => navigate(['anywhere'], { lat: la.toFixed(3), lon: lo.toFixed(3) })
 
   async function search(e: React.FormEvent) {
     e.preventDefault()
     if (!q.trim()) return
+    const ll = parseLatLon(q)
+    if (ll) {
+      setMsg('')
+      return pick(ll[0], ll[1])
+    }
     setMsg('Searching…')
     try {
       const g = await geocode(q.trim())
@@ -29,31 +77,42 @@ export default function Anywhere({ cat, query }: { cat: Catalog; query: URLSearc
       setMsg('')
       navigate(['anywhere'], { lat: g.lat.toFixed(3), lon: g.lon.toFixed(3), name: g.name })
     } catch {
-      setMsg('Place search is unavailable. Click the map instead.')
+      setMsg(`Place search is unavailable. ${view === 'globe' ? 'Click the globe' : 'Click the map'} or type coordinates instead.`)
     }
   }
 
+  const card = has ? <PickCard cat={cat} lat={lat!} lon={lon!} name={name} /> : null
+
   return (
     <>
-      <div className="page-head">
-        <div className="wrap grid-2" style={{ alignItems: 'start' }}>
-          <div>
+      <div className="page-head any-head on-dark">
+        <div className="wrap any-grid">
+          <div className="any-copy">
             <span className="eyebrow">Live mode · NASA POWER</span>
             <h1 style={{ marginTop: 12 }}>Investigate any spot on Earth</h1>
             <p className="lede">
-              Click the map or search for a place. TrendLens fetches 25 to 45 years of monthly NASA data for that grid cell straight from NASA POWER
-              and runs every test in your browser.
+              {view === 'globe' ? 'Spin the globe and pick any place, or search for one.' : 'Click the map or search for a place.'} TrendLens fetches 25 to
+              45 years of monthly NASA data for that grid cell straight from NASA POWER and runs every test in your browser.
             </p>
-            <form onSubmit={search} style={{ display: 'flex', gap: 8, marginTop: 20, maxWidth: 520 }}>
-              <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Town, city or region" aria-label="Place name" style={{ flex: 1 }} />
+          </div>
+          <div className="any-tools">
+            <form className="qbox" role="search" onSubmit={search}>
+              <input
+                type="search"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Town, region or coordinates"
+                aria-label="Place name or coordinates"
+                aria-describedby="any-tip"
+              />
               <button className="btn" type="submit">
                 Search
               </button>
             </form>
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 10, flexWrap: 'wrap' }}>
+            <div className="any-row">
               {'geolocation' in navigator && (
                 <button
-                  className="btn small ghost"
+                  className="btn small ghost on-dark"
                   onClick={() =>
                     navigator.geolocation.getCurrentPosition(
                       (p) => navigate(['anywhere'], { lat: p.coords.latitude.toFixed(3), lon: p.coords.longitude.toFixed(3), name: 'Your location' }),
@@ -64,25 +123,143 @@ export default function Anywhere({ cat, query }: { cat: Catalog; query: URLSearc
                   Use my location
                 </button>
               )}
-              <span className="small muted" aria-live="polite">
+              <span className="any-msg" aria-live="polite">
                 {msg}
               </span>
             </div>
+            <p className="any-tip" id="any-tip">
+              Coordinates work too: type latitude, longitude such as <span className="mono">12.97, 77.59</span> or <span className="mono">33.4S 70.6W</span>.
+            </p>
+            <ol className="any-steps" aria-label="What happens when you pick a place">
+              <li>
+                <span>
+                  <strong>Pick a spot</strong> anywhere on land or sea.
+                </span>
+              </li>
+              <li>
+                <span>
+                  <strong>NASA data arrives:</strong> monthly NASA POWER records for that grid cell, from 1981 on.
+                </span>
+              </li>
+              <li>
+                <span>
+                  <strong>Every variable is tested</strong> for a trend (Mann-Kendall) and its rate is measured (Theil-Sen), right in your browser.
+                </span>
+              </li>
+            </ol>
           </div>
-          <div className="map" style={{ height: 340 }}>
-            <WorldMap
-              regions={cat.regions}
-              dark={false}
-              point={has ? [lat!, lon!] : null}
-              fitTo="point"
-              onRegion={(id) => navigate(['explore', id])}
-              onPoint={(la, lo) => navigate(['anywhere'], { lat: la.toFixed(3), lon: lo.toFixed(3) })}
-            />
+          <div className="any-stage">
+            <div className="any-bar">
+              <span className="any-hint">
+                {view === 'globe'
+                  ? `${coarse ? 'Tap' : 'Click'} anywhere on Earth to investigate it. Outlined boxes are the featured regions.`
+                  : 'Click the map to investigate a spot, or a box to explore a featured region.'}
+              </span>
+              <div className="any-toggle" role="group" aria-label="Choose how to pick a place">
+                <button
+                  type="button"
+                  aria-pressed={view === 'globe'}
+                  disabled={!canGlobe}
+                  title={canGlobe ? undefined : 'The 3D globe needs WebGL, which this browser does not provide'}
+                  onClick={() => choose('globe')}
+                >
+                  Globe
+                </button>
+                <button type="button" aria-pressed={view === 'map'} onClick={() => choose('map')}>
+                  Map
+                </button>
+              </div>
+            </div>
+            {view === 'globe' ? (
+              <GlobeLoader
+                regions={regions}
+                point={point}
+                pointLabel={name}
+                onPick={pick}
+                onFail={(why) => {
+                  console.warn('[globe] falling back to the flat map:', why)
+                  setView('map')
+                  setGlobeNote('The 3D globe could not start in this browser, so the flat map is shown instead.')
+                }}
+              >
+                {card}
+              </GlobeLoader>
+            ) : (
+              <>
+                <div className="map any-map">
+                  <WorldMap
+                    regions={cat.regions}
+                    dark={false}
+                    point={point}
+                    fitTo="point"
+                    onRegion={(id) => navigate(['explore', id])}
+                    onPoint={(la, lo) => navigate(['anywhere'], { lat: la.toFixed(3), lon: lo.toFixed(3) })}
+                  />
+                </div>
+                {!canGlobe && <p className="any-note">The 3D globe needs WebGL, which this browser does not provide, so the flat map is shown.</p>}
+                {globeNote && <p className="any-note">{globeNote}</p>}
+                {card}
+              </>
+            )}
           </div>
         </div>
       </div>
-      {has ? <PointRadar cat={cat} lat={lat!} lon={lon!} name={name} wanted={wanted} /> : <Suggestions />}
+      {has ? (
+        <div id="any-results">
+          <PointRadar cat={cat} lat={lat!} lon={lon!} name={name} wanted={wanted} />
+        </div>
+      ) : (
+        <Suggestions />
+      )}
     </>
+  )
+}
+
+/** The picked point and the headline of its live result, next to the globe. */
+function PickCard({ cat, lat, lon, name }: { cat: Catalog; lat: number; lon: number; name?: string }) {
+  const place = useAsync(() => loadPoint(cat, lat, lon, name), [lat, lon])
+  const fresh = place.data && place.data.lat === lat && place.data.lon === lon ? place.data : undefined
+  const items = useMemo(() => (fresh ? rankItems(analysesFor(fresh)) : null), [fresh])
+  const sig = items?.filter((i) => i.a.verdict === 'significant') ?? []
+  const top = sig[0]
+  const meta = top ? cat.variables[top.id] : undefined
+  const r = top && meta ? rate(top.a, meta) : undefined
+  const toResults = () =>
+    document.getElementById('any-results')?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' })
+  return (
+    <div className="any-pick" aria-live="polite">
+      <span className="eyebrow">Investigating</span>
+      <span className="any-pick-name">{name ?? formatLatLon(lat, lon)}</span>
+      {name && <span className="any-pick-coords">{formatLatLon(lat, lon)}</span>}
+      <p className="any-pick-status">
+        {place.error ? (
+          'NASA POWER could not be reached. Try again in a moment.'
+        ) : !items ? (
+          'Fetching monthly NASA POWER data since 1981…'
+        ) : (
+          <>
+            <strong>
+              {sig.length} of {items.length}
+            </strong>{' '}
+            variables show a significant trend here.
+            {top && meta && r && (
+              <>
+                {' '}
+                Strongest: {meta.name.toLowerCase()} <Dir slope={top.a.sen.slope} />, {r.value}
+                {unitText(meta)} per decade.
+              </>
+            )}
+          </>
+        )}
+      </p>
+      {items && (
+        <div className="any-pick-actions">
+          <button type="button" className="btn small" onClick={toResults}>
+            See the evidence ↓
+          </button>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -117,12 +294,7 @@ function Suggestions() {
 
 function PointRadar({ cat, lat, lon, name, wanted }: { cat: Catalog; lat: number; lon: number; name?: string; wanted?: string }) {
   const place = useAsync(() => loadPoint(cat, lat, lon, name), [lat, lon])
-  const analyses = useMemo(() => {
-    if (!place.data) return null
-    const out: Record<string, Analysis> = {}
-    for (const [vid, s] of Object.entries(place.data.series)) out[vid] = analyzeSeries(s)
-    return out
-  }, [place.data])
+  const analyses = useMemo(() => (place.data ? analysesFor(place.data) : null), [place.data])
   if (place.error) return <ErrorBox message={`NASA POWER could not be reached: ${place.error}`} />
   if (!place.data || !analyses)
     return (

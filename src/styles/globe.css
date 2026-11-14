@@ -1,0 +1,199 @@
+/* 3D globe (components/Globe*.tsx) and the Anywhere page band around it.
+   Colours come only from theme tokens; the NASA tokens fall back to the values in brackets. */
+
+/* ------------------------------------------------------------------ Anywhere: deep-space band */
+.any-head {
+  background:
+    radial-gradient(55% 75% at 74% 42%, color-mix(in srgb, var(--space-glow, #3f7fe0) 20%, transparent), transparent 72%),
+    var(--space, #0a1630);
+  color: var(--paper, #fff);
+  border-bottom: 1px solid var(--night-rule);
+}
+.any-head h1 { color: var(--paper, #fff); }
+.any-head .eyebrow { color: var(--night-text); }
+.any-head .lede { color: var(--night-text); }
+.any-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-areas: 'copy stage' 'tools stage';
+  grid-template-rows: auto 1fr;
+  column-gap: 44px;
+  row-gap: 24px;
+  align-items: start;
+}
+.any-copy { grid-area: copy; min-width: 0; }
+.any-tools { grid-area: tools; min-width: 0; }
+.any-stage { grid-area: stage; min-width: 0; }
+@media (max-width: 900px) {
+  .any-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'copy' 'stage' 'tools'; grid-template-rows: auto; row-gap: 18px; }
+}
+.any-tools .qbox { max-width: 520px; }
+.any-tools .qbox input { min-width: 0; }
+.any-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+.any-msg { font-size: 14px; color: var(--night-text); }
+.any-tip { margin-top: 12px; font-size: 13.5px; color: var(--night-text); }
+.any-tip .mono { color: var(--paper, #fff); }
+.any-steps { list-style: none; counter-reset: step; margin: 26px 0 0; padding: 0; display: grid; gap: 12px; max-width: 46ch; border-top: 1px solid var(--night-rule); padding-top: 20px; }
+.any-steps li { counter-increment: step; display: grid; grid-template-columns: 30px minmax(0, 1fr); align-items: baseline; font-size: 14.5px; color: var(--night-text); }
+.any-steps li::before { content: counter(step, decimal-leading-zero); font-family: var(--mono); font-size: 12px; color: color-mix(in srgb, var(--nasa-red, var(--brand)) 60%, var(--paper, #fff)); padding-top: 2px; }
+.any-steps strong { color: var(--paper, #fff); font-weight: 600; }
+
+.any-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px 14px; flex-wrap: wrap; margin-bottom: 10px; }
+.any-hint { font-size: 14px; color: var(--night-text); }
+.any-toggle { display: inline-flex; border: 1px solid var(--night-rule); border-radius: 2px; overflow: hidden; }
+.any-toggle button {
+  background: transparent; color: var(--night-text); border: 0; cursor: pointer;
+  padding: 7px 16px; min-height: 36px; font-size: 13.5px; font-weight: 600;
+}
+.any-toggle button + button { border-left: 1px solid var(--night-rule); }
+.any-toggle button:hover { color: var(--paper, #fff); }
+.any-toggle button[aria-pressed='true'] { background: var(--paper, #fff); color: var(--ink); }
+.any-toggle button:disabled { opacity: 0.45; cursor: not-allowed; }
+.any-note { margin-top: 10px; font-size: 13.5px; color: var(--night-text); }
+.any-map { height: clamp(340px, 52vh, 500px); }
+
+/* the picked point and its live result, a light card on the dark band */
+.any-pick {
+  margin-top: 14px; display: grid; gap: 4px;
+  background: var(--card, var(--paper, #fff)); color: var(--ink);
+  border: 1px solid var(--card-rule, var(--rule)); border-left: 3px solid var(--nasa-red, var(--brand));
+  border-radius: 2px; padding: 14px 16px;
+}
+.any-pick .eyebrow { color: var(--muted); }
+.any-pick-name { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
+.any-pick-coords { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.any-pick-status { font-size: 14.5px; color: var(--ink-2); margin-top: 4px; }
+.any-pick-status strong { color: var(--ink); }
+.any-pick .dir.rise { color: var(--rise-ink); }
+.any-pick .dir.fall { color: var(--fall-ink); }
+.any-pick-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+/* "See the evidence" scrolls here; keep the heading clear of the sticky site header */
+#any-results { scroll-margin-top: 76px; }
+
+/* ------------------------------------------------------------------ globe */
+.globe { display: grid; gap: 14px; min-width: 0; }
+.globe-stage, .globe-skeleton {
+  position: relative;
+  height: clamp(380px, 60vh, 560px);
+  border-radius: 2px;
+  overflow: hidden;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--space-glow, #3f7fe0) 22%, transparent), transparent);
+}
+@media (max-width: 600px) { .globe-stage, .globe-skeleton { height: min(104vw, 420px); } }
+/* outranks .maplibregl-map { position: relative } from maplibre-gl.css, which loads after this file */
+.globe-stage > .globe-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.globe-canvas .maplibregl-canvas { outline: none; }
+.globe-stage:has(.maplibregl-canvas:focus-visible) { box-shadow: inset 0 0 0 2px var(--focus, var(--rise)); }
+
+/* crosshair for keyboard picking: Enter investigates the spot under it */
+.globe-cross { position: absolute; left: 50%; top: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px; pointer-events: none; display: none; z-index: 2; }
+.globe-cross::before, .globe-cross::after { content: ''; position: absolute; background: var(--paper, #fff); box-shadow: 0 0 0 1px var(--space, #0a1630); }
+.globe-cross::before { left: 11px; top: 0; width: 2px; height: 24px; }
+.globe-cross::after { top: 11px; left: 0; width: 24px; height: 2px; }
+.globe-stage:has(.maplibregl-canvas:focus-visible) .globe-cross { display: block; }
+
+.globe-imagery {
+  position: absolute; top: 10px; left: 10px; z-index: 2; display: inline-flex; overflow: hidden;
+  border: 1px solid var(--night-rule); border-radius: 2px;
+  background: color-mix(in srgb, var(--space, #0a1630) 82%, transparent);
+}
+.globe-imagery button {
+  background: transparent; border: 0; color: var(--night-text); cursor: pointer;
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 7px 10px; min-height: 34px;
+}
+.globe-imagery button + button { border-left: 1px solid var(--night-rule); }
+.globe-imagery button:hover { color: var(--paper, #fff); }
+.globe-imagery button[aria-pressed='true'] { background: var(--paper, #fff); color: var(--ink); }
+
+.globe-home {
+  position: absolute; right: 10px; bottom: 8px; z-index: 2; cursor: pointer;
+  background: color-mix(in srgb, var(--space, #0a1630) 82%, transparent); color: var(--paper, #fff);
+  border: 1px solid var(--night-rule); border-radius: 2px; padding: 6px 10px; min-height: 32px;
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.globe-home:hover { border-color: var(--paper, #fff); }
+
+.globe-credit {
+  position: absolute; left: 10px; bottom: 8px; z-index: 2; margin: 0; max-width: calc(100% - 140px);
+  font-size: 11px; line-height: 1.35; color: var(--night-text); padding: 4px 7px; border-radius: 2px;
+  background: color-mix(in srgb, var(--space, #0a1630) 82%, transparent);
+}
+.globe-credit a { color: var(--paper, #fff); }
+
+/* zoom buttons on the dark stage (selectors outrank maplibre-gl.css, which loads later) */
+.globe-stage .maplibregl-ctrl-group { background: color-mix(in srgb, var(--space, #0a1630) 82%, transparent); border: 1px solid var(--night-rule); border-radius: 2px; box-shadow: none; }
+.globe-stage .maplibregl-ctrl-group button { width: 34px; height: 34px; }
+.globe-stage .maplibregl-ctrl-group button + button { border-top: 1px solid var(--night-rule); }
+.globe-stage .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1); }
+.globe-stage .maplibregl-ctrl-group button:focus-visible { box-shadow: inset 0 0 0 2px var(--focus, var(--rise)); }
+.globe-stage .maplibregl-cooperative-gesture-screen { font-family: var(--font); }
+
+/* region labels: shown once the globe is zoomed in far enough to keep them apart */
+.globe-label {
+  display: none; cursor: pointer; white-space: nowrap;
+  font-size: 11.5px; font-weight: 600; line-height: 1; color: var(--paper, #fff);
+  padding: 4px 7px; border-radius: 2px; border: 1px solid var(--night-rule);
+  background: color-mix(in srgb, var(--space, #0a1630) 80%, transparent);
+}
+.labels-on .globe-label { display: block; }
+.globe-label.maplibregl-marker-covered { pointer-events: none; }
+.globe-label i, .globe-chip i, .globe-pop-trend i { font-style: normal; }
+.globe-label.rise i, .globe-chip.rise i { color: color-mix(in srgb, var(--rise) 50%, var(--paper, #fff)); }
+.globe-label.fall i, .globe-chip.fall i { color: color-mix(in srgb, var(--fall) 55%, var(--paper, #fff)); }
+
+/* the picked point */
+.globe-pin { width: 18px; height: 18px; pointer-events: none; }
+.globe-pin-dot { position: absolute; inset: 3px; border-radius: 50%; background: var(--nasa-red, var(--brand)); box-shadow: 0 0 0 2px var(--paper, #fff); }
+.globe-pin-ring { position: absolute; inset: -7px; border-radius: 50%; border: 2px solid var(--nasa-red, var(--brand)); animation: globe-ping 1.8s ease-out infinite; }
+@keyframes globe-ping { from { transform: scale(0.35); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .globe-pin-ring { animation: none; opacity: 0.7; } }
+
+/* region popup (sticky, with actions) and hover tooltip: light cards */
+.globe-pop .maplibregl-popup-content, .globe-tip .maplibregl-popup-content {
+  background: var(--card, var(--paper, #fff)); color: var(--ink); font-family: var(--font);
+  border-radius: 2px; padding: 12px 14px; box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 40%, transparent);
+}
+.globe-tip .maplibregl-popup-content { padding: 9px 12px; pointer-events: none; }
+.globe-pop .maplibregl-popup-close-button { width: 34px; height: 34px; font-size: 20px; color: var(--muted); border-radius: 2px; }
+.globe-pop .maplibregl-popup-close-button:hover { background: var(--paper-2); color: var(--ink); }
+.globe-pop-body { display: grid; gap: 3px; min-width: 190px; }
+.globe-pop-eyebrow { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.globe-pop-name { font-size: 16px; font-weight: 700; padding-right: 26px; line-height: 1.25; }
+.globe-pop-trend { font-size: 14px; color: var(--ink-2); }
+.globe-pop-trend.rise i { color: var(--rise-ink); }
+.globe-pop-trend.fall i { color: var(--fall-ink); }
+.globe-pop-note { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.globe-pop-detail { font-family: var(--mono); font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+/* above the imagery switch and buttons drawn over the stage */
+.globe-stage .maplibregl-popup { z-index: 3; }
+.globe-pop-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 8px; }
+.globe-pop-link { font-size: 13.5px; font-weight: 600; color: var(--nasa-blue, var(--rise-ink)); }
+.globe-pop-btn {
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; min-height: 32px;
+  padding: 5px 10px; border: 1px solid var(--ink); border-radius: 2px; background: transparent; color: var(--ink);
+}
+.globe-pop-btn:hover { background: var(--paper-2); }
+
+/* featured regions list: the keyboard and screen-reader route to the outlines */
+.globe-legend-title { display: block; margin-bottom: 8px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--night-text); }
+.globe-legend ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+@media (max-width: 600px) { .globe-legend ul { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.globe-chip {
+  width: 100%; min-height: 44px; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 7px; align-items: baseline;
+  text-align: left; cursor: pointer; padding: 7px 10px; border-radius: 2px;
+  background: transparent; color: var(--paper, #fff); border: 1px solid var(--night-rule);
+}
+.globe-chip:hover { border-color: var(--paper, #fff); }
+.globe-chip i { grid-row: span 2; }
+.globe-chip-name { font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.globe-chip-var { grid-column: 2; font-family: var(--mono); font-size: 11px; color: var(--night-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* placeholder while the globe code loads */
+.globe-skeleton { display: grid; place-items: center; }
+.globe-skeleton-orb {
+  width: min(72%, 400px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 36% 34%, var(--space-2, #12264d), var(--space, #0a1630) 72%);
+  box-shadow: 0 0 70px color-mix(in srgb, var(--space-glow, #3f7fe0) 35%, transparent);
+}
+.globe-skeleton-text { position: absolute; font-size: 13.5px; color: var(--night-text); }
