@@ -43,6 +43,9 @@ export async function buildDemos(cat: Catalog): Promise<Demo[]> {
   const prSig = prSens.filter((c) => c.significant).length
   const prStations = (await loadRegion('prairies')).stations.t2m
   const r = (a: Analysis, vid: string) => rate(a, v[vid])
+  // count the variables that actually have results (cat.variables also lists ones still being downloaded)
+  const nAm = Object.keys(cat.results.samazon ?? {}).length
+  const nWord = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'][nAm] ?? String(nAm)
 
   const amazon: Demo = {
     id: 'clear-trend',
@@ -53,7 +56,7 @@ export async function buildDemos(cat: Catalog): Promise<Demo[]> {
       {
         to: href(['explore', 'samazon']),
         highlight: '.radar',
-        text: `We start with a place and a question. For the southern Amazon, TrendLens scans eight NASA variables and ranks them by how much they changed compared with their normal year-to-year swings.`,
+        text: `We start with a place and a question. For the southern Amazon, TrendLens scans ${nWord} NASA variables and ranks them by how much they changed compared with their normal year-to-year swings.`,
       },
       {
         to: href(['trend', 'samazon', 't2m']),

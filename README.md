@@ -64,8 +64,8 @@ Validation (`pipeline/test_stats.py`, `pipeline/simulate.py`, `src/lib/stats.tes
   `linregress`, `false_discovery_control`) exactly on random series.
 - Recovers a known slope from synthetic 45-year monthly data with seasons and memory;
   the 95% interval covers the truth ~95% of the time.
-- False-alarm rate stays near 5% with autocorrelated noise, where the uncorrected test reaches
-  30% and Hamed–Rao 26% (numbers on the Method page).
+- False-alarm rate stays at or below 10% (4–10%, against a nominal 5%) with autocorrelated noise,
+  where the uncorrected test reaches 30% and Hamed–Rao 26% (numbers on the Method page).
 - The browser (TypeScript) implementation reproduces every published Python result.
 
 What we do not claim: no forecasts, no causes, no non-linear models. Non-significant trends

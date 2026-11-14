@@ -3,7 +3,8 @@
 Team Cosmosis · NASA Space Apps Challenge 2026 · *Be an Earth System Trend Detective!*
 
 Numbers below come from the data build of 13 November 2026 (MERRA-2 and CERES via NASA POWER,
-MODIS via ORNL DAAC, NOAA Climate Data Online). Re-running `pipeline/build.py` regenerates them.
+MODIS via ORNL DAAC, NOAA Climate Data Online). Re-running `pipeline/build.py` (data) and
+`pipeline/simulate.py` (validation) regenerates them.
 
 ---
 
@@ -25,7 +26,8 @@ properly. TrendLens removes all three in one guided workflow:
    wetness, land evaporation, tree cover, aerosol optical depth, sunlight reaching the ground) and
    ranks them by signal-to-noise. Each comes with a plain-language definition, its NASA source and
    a significance badge.
-3. **Test.** Open a variable: 25 to 45 years of monthly data with the seasonal cycle removed, yearly
+3. **Test.** Open a variable: 25 to 45 years of data (monthly with the seasonal cycle removed;
+   yearly for tree cover), yearly
    averages, a Theil-Sen trend line with its 95% band, and a Mann-Kendall test corrected for
    year-to-year memory. The verdict is always written in the same sentence format.
 4. **Explain.** A start-year sensitivity strip, a years-of-data-needed estimate, two second-opinion
@@ -62,7 +64,8 @@ before you use it.
   reproduces every published Python result.
 - Benjamini–Hochberg false-discovery control on every map.
 - An independent check: NOAA station records. In the US Southwest, 57 stations track MERRA-2 with
-  r = 0.96 for temperature, and both show significant warming and drying.
+  r = 0.96 for temperature and 62 stations with r = 0.97 for rainfall, and both sources show
+  significant warming and drying.
 - Honest reporting: "not significant yet" with an estimate of the years of data needed, and no
   forecasts or causal claims.
 
@@ -103,7 +106,7 @@ arrow and a word as well) and a table view under every chart.
 | 0:00–0:10 | Home hero | "NASA measures hundreds of things about our planet. But is any one of them really changing where you live, or is it just noise?" |
 | 0:10–0:30 | Ask panel: Southern Amazon → Find what's changing | "TrendLens starts with a question and a place. Here, the southern Amazon, where forest meets farmland." |
 | 0:30–1:00 | Trend Radar, then the map | "The Trend Radar tests seven NASA variables and ranks them by how far they moved compared with normal year-to-year swings. The map shows the change grid cell by grid cell, with false-discovery control so luck doesn't paint the map." |
-| 1:00–1:30 | Air temperature result, cards, sensitivity strip | "Air temperature: +0.48 °C per decade, p below 0.001, significant. And it isn't a fluke of when we start counting: almost every start year gives the same verdict." |
+| 1:00–1:30 | Air temperature result, cards, sensitivity strip | "Air temperature: +0.48 °C per decade, p below 0.001, significant. And it isn't a fluke of when we start counting: 29 of 36 start years give the same verdict; only the shortest records, starting in 2010 or later, fall short." |
 | 1:30–1:50 | Demo 2: Canadian Prairies | "Here's honesty: Prairie temperatures rise 0.15 °C per decade, but with winters this wild we can't rule out chance. A trend this size needs about 75 years of data; we have 45. NOAA weather stations agree." |
 | 1:50–2:10 | Compare: sunlight, India vs China | "Same variable, opposite directions. Sunlight at the ground is falling over India and rising over China. One process, haze, explains both." |
 | 2:10–2:30 | Method page: validation tables, practice lab | "Every number is tested: simulations, trusted libraries and two independent implementations. Students can even plant a trend in fake data and see if the test finds it." |

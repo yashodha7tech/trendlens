@@ -510,7 +510,9 @@ function Stations({ place, vid, meta }: { place: Place; vid: string; meta: Varia
         {st.same_direction
           ? st.both_significant
             ? 'Both sources show a significant trend in the same direction.'
-            : 'Both point the same way, but they disagree on whether the trend is significant.'
+            : T.station.p >= 0.05 && T.merra2.p >= 0.05
+              ? 'Both point the same way, and neither trend is significant.'
+              : 'Both point the same way, but they disagree on whether the trend is significant.'
           : 'The two sources point in different directions, so treat this trend with caution.'}{' '}
         {T.station.p < 0.05 !== T.merra2.p < 0.05 && Math.abs(T.station.slope) > Math.abs(T.merra2.slope)
           ? 'Stations often sit in towns that have grown warmer than the land around them (the urban heat island), which can make station trends steeper than a 50 km model cell.'

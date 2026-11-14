@@ -16,7 +16,7 @@ interface Validation {
 
 const PIPELINE: [string, string][] = [
   ['Average over the region', 'For each month, average every land grid cell in the region, weighting each cell by its true area (cells shrink toward the poles). Missing values are skipped, never filled in.'],
-  ['Check the record', 'Count missing months and drop any series shorter than 15 years. MERRA-2 runs 1981–2025; CERES and MODIS start in 2000–2001, so those trends cover 25 years.'],
+  ['Check the record', 'Count missing months and drop any series shorter than 15 years. MERRA-2 runs 1981–2025; CERES and MODIS start in 2000–2001, so those trends cover 25–26 years.'],
   ['Remove the seasons', "Summer is always hotter than winter, and that cycle would swamp any trend. We subtract each calendar month's long-term average and add back the overall average, so the numbers keep their familiar scale."],
   ['Average each year', 'Average the seasons-removed months into one value per year. Yearly values carry far less short-term memory than monthly ones, which keeps the test honest. Steps 3–4 follow the monthly-anomaly method of Acker et al. (2009).'],
   ['Test for a trend', 'The Mann-Kendall test asks one question: across all pairs of years, does the later year tend to be higher (or lower) than the earlier one? It needs no straight-line or bell-curve assumptions.'],
