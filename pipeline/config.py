@@ -51,6 +51,12 @@ REGIONS = {
 }
 
 # Each variable: source + plain words. `start` is the first year we analyse.
+# `contrast` (optional) is a general, non-causal note on what can push the variable in
+# opposite directions in two regions, shown on the Compare page.
+# `axis` (optional) labels a chart's value axis when the unit alone is ambiguous: "%" means
+# "% of ground" for tree cover but "% of sky" for cloud cover.
+# CERES-based variables (aod, sun, cloud) start in 2001: before that POWER fills in from an
+# older product (GEWEX SRB), and mixing the two could put an artificial jump into the record.
 VARIABLES = {
     "t2m": {
         "name": "Air temperature",
@@ -62,6 +68,21 @@ VARIABLES = {
         "source": "MERRA-2 reanalysis (NASA GMAO), via NASA POWER",
         "instrument": "Model that assimilates satellite and weather-station observations",
         "power": "T2M",
+        "start": 1981,
+        "land_only": False,
+        "agg": "mean",
+    },
+    "tmax": {
+        "name": "Hottest-day temperature",
+        "short": "Hottest day",
+        "topic": "heat",
+        "unit": "°C",
+        "decimals": 2,
+        "definition": "How hot the hottest hour of each month gets, about 2 metres above the ground: the peak of the month's hottest day.",
+        "source": "MERRA-2 reanalysis (NASA GMAO), via NASA POWER",
+        "instrument": "Model that assimilates satellite and weather-station observations; its hourly values give each month's peak",
+        "contrast": "The hottest hours depend on sunshine, soil moisture and how much water plants and irrigation put into the air. Wet ground and haze can hold daytime peaks back in one place while drying soils let them climb in another.",
+        "power": "T2M_MAX",
         "start": 1981,
         "land_only": False,
         "agg": "mean",
@@ -106,6 +127,22 @@ VARIABLES = {
         "power": "EVLAND",
         "start": 1981,
         "land_only": True,
+        "agg": "mean",
+    },
+    "humidity": {
+        "name": "Relative humidity",
+        "short": "Humidity",
+        "topic": "water",
+        "unit": "%",
+        "axis": "% humidity",
+        "decimals": 2,
+        "definition": "How close the air near the ground is to holding all the water vapour it can. At 100% dew and fog form; low values mean dry air.",
+        "source": "MERRA-2 reanalysis (NASA GMAO), via NASA POWER",
+        "instrument": "Model that assimilates satellite and weather-station observations of temperature and moisture",
+        "contrast": "Relative humidity compares the water vapour in the air with what the air could hold, and warmer air can hold more. Where moisture from rain, irrigation or plants keeps up with warming it can rise; where it does not, the air gets relatively drier.",
+        "power": "RH2M",
+        "start": 1981,
+        "land_only": False,
         "agg": "mean",
     },
     "ndvi": {
@@ -159,6 +196,37 @@ VARIABLES = {
         "instrument": "CERES radiation sensors on Terra and Aqua, with MODIS and geostationary clouds",
         "power": "ALLSKY_SFC_SW_DWN",
         "start": 2001,
+        "land_only": False,
+        "agg": "mean",
+    },
+    "cloud": {
+        "name": "Cloud cover",
+        "short": "Clouds",
+        "topic": "air",
+        "unit": "%",
+        "axis": "% of sky",
+        "decimals": 2,
+        "definition": "The share of the sky covered by cloud, averaged over the month. Clouds shade the ground and decide how much sunlight gets through.",
+        "source": "CERES SYN1deg (NASA Langley), clouds from MODIS and geostationary satellites, via NASA POWER",
+        "instrument": "MODIS on Terra and Aqua plus geostationary imagers, processed by the CERES cloud team",
+        "contrast": "Clouds follow the weather patterns that bring moist air, such as monsoons and storm tracks, and haze can change how clouds form. When those patterns shift, one region can get cloudier while another clears.",
+        "power": "CLOUD_AMT",
+        "start": 2001,
+        "land_only": False,
+        "agg": "mean",
+    },
+    "wind": {
+        "name": "Wind speed",
+        "short": "Wind",
+        "topic": "air",
+        "unit": "m/s",
+        "decimals": 4,  # 6 stored decimals: forest winds are tiny (~0.3 m/s), so coarser values tie
+        "definition": "How fast the air moves about 2 metres above the ground, averaged over the month. 1 m/s is a gentle drift; 5 m/s keeps leaves and small twigs moving.",
+        "source": "MERRA-2 reanalysis (NASA GMAO), via NASA POWER",
+        "instrument": "Model that assimilates satellite, weather-balloon and station observations",
+        "contrast": "Near-ground winds depend on large-scale pressure patterns and on how rough the surface is. Shifting storm tracks, growing crops, trees and buildings can slow the wind in one region while it picks up in another.",
+        "power": "WS2M",
+        "start": 1981,
         "land_only": False,
         "agg": "mean",
     },
