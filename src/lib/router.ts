@@ -5,10 +5,19 @@ export interface Route {
   query: URLSearchParams
 }
 
+/** Decode one path segment; a malformed escape such as "%E0%A4" is kept as typed so it reaches the not-found page. */
+function decodeSegment(s: string): string {
+  try {
+    return decodeURIComponent(s)
+  } catch {
+    return s
+  }
+}
+
 export function parseHash(hash: string): Route {
   const h = hash.replace(/^#\/?/, '')
   const [p, q = ''] = h.split('?')
-  return { path: p.split('/').filter(Boolean).map(decodeURIComponent), query: new URLSearchParams(q) }
+  return { path: p.split('/').filter(Boolean).map(decodeSegment), query: new URLSearchParams(q) }
 }
 
 export function useRoute(): Route {

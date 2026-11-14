@@ -1,8 +1,12 @@
 node_modules/
 dist/
-.vercel/
+.vercel
 .DS_Store
 *.log
+*.tsbuildinfo
+.env*
+.netrc
+*.pem
 pipeline/.venv/
 pipeline/cache/
 pipeline/.pytest_cache/

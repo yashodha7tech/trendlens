@@ -80,8 +80,9 @@ const OverlayTileLayer = L.TileLayer.extend({
 
 /** Country borders and coastlines drawn above the data. */
 export function referenceLayers(pane: string) {
-  // the layer has no features below zoom 3, so don't request those tiles at all
-  return [new OverlayTileLayer(`${GIBS}/Reference_Features_15m/default/GoogleMapsCompatible_Level13/{z}/{y}/{x}.png`, { minZoom: 3, maxNativeZoom: 13, maxZoom: 13, pane })]
+  // Reference_Features_15m currently answers only with empty placeholder tiles, so use the Level 9 layer
+  // (upscaled past zoom 9). Below zoom 3 it draws coastlines only, which the relief already shows.
+  return [new OverlayTileLayer(`${GIBS}/Reference_Features/default/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png`, { minZoom: 3, maxNativeZoom: 9, maxZoom: 13, pane })]
 }
 
 export const bboxBounds = (b: [number, number, number, number]) => L.latLngBounds([b[0], b[2]], [b[1], b[3]])

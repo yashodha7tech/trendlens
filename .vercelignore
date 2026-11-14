@@ -1,0 +1,6 @@
+# Vercel only needs the web app: src/, public/ and the root config files.
+# Patterns are anchored to the root, so public/data/ is still deployed.
+/pipeline/
+/data/
+/docs/
+/dist/

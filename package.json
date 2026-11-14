@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "Cosmosis TrendLens: become an Earth system trend detective with NASA data.",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
