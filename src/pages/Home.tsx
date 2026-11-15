@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Badge, Dir } from '../components/bits'
+import CaseFiles from '../components/CaseFiles'
 import { useDemos } from '../components/DemoPlayer'
 import WorldMap from '../components/WorldMap'
 import { FALL_LINE, RISE_LINE } from '../lib/colors'
@@ -168,6 +169,8 @@ export default function Home({ cat }: { cat: Catalog }) {
           </div>
         </div>
       </section>
+
+      <CaseFiles cat={cat} />
 
       <section className="section" id="demos">
         <div className="wrap">

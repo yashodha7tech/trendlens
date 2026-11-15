@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Badge, Dir, ErrorBox, Loading, SensitivityStrip } from '../components/bits'
+import { ImpactPanel } from '../components/Impact'
 import StationChart from '../components/StationChart'
 import TimeSeriesChart from '../components/TimeSeriesChart'
 import TrendMap from '../components/TrendMap'
@@ -262,6 +263,12 @@ function TrendView({ cat, place, vid, query }: { cat: Catalog; place: Place; vid
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      <section className="section" id="impact">
+        <div className="wrap">
+          <ImpactPanel vid={vid} name={meta.name} placeName={placeName} regionId={place.kind === 'region' ? place.id : undefined} a={a} />
         </div>
       </section>
 

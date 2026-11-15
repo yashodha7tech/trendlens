@@ -1,4 +1,5 @@
 import { useTitle } from '../lib/hooks'
+import { sourcesByOrg } from '../lib/impact'
 import type { Catalog } from '../lib/types'
 
 const DATASETS: { name: string; vars: string; via: string; detail: string; cite: string; url: string; needs?: string }[] = [
@@ -193,6 +194,39 @@ export default function Sources({ cat }: { cat: Catalog }) {
                 </div>
               ))}
             </dl>
+          </div>
+        </div>
+      </section>
+      <section className="section" id="impact-sources">
+        <div className="wrap">
+          <div className="section-head">
+            <div>
+              <span className="eyebrow">Impact panels and case files</span>
+              <h2>Why it matters: research sources</h2>
+            </div>
+          </div>
+          <p className="small" style={{ color: 'var(--ink-2)', maxWidth: '90ch', marginBottom: 16 }}>
+            The "why this matters" text on every result is context from these publications, not a conclusion of our statistics. Each one was read
+            before it was cited.
+          </p>
+          <div className="grid-2">
+            {sourcesByOrg()
+              .filter((g) => g.items.length)
+              .map((g) => (
+                <div key={g.org}>
+                  <h4 style={{ marginBottom: 8 }}>{g.label}</h4>
+                  <ul className="small" style={{ paddingLeft: 18, color: 'var(--ink-2)', display: 'grid', gap: 6, margin: 0 }}>
+                    {g.items.map((it) => (
+                      <li key={it.id}>
+                        {it.cite}{' '}
+                        <a href={it.url} target="_blank" rel="noreferrer">
+                          {it.doi ? `doi:${it.doi}` : 'link'}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
           </div>
         </div>
       </section>
