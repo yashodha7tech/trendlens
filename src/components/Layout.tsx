@@ -16,6 +16,7 @@ const LINKS: [string, string][] = [
   ['explore', 'Explore'],
   ['compare', 'Compare'],
   ['anywhere', 'Anywhere'],
+  ['region', 'Your region'],
   ['method', 'Method'],
   ['sources', 'Data & sources'],
 ]

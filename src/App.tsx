@@ -11,6 +11,7 @@ import Compare from './pages/Compare'
 import Explore from './pages/Explore'
 import Home from './pages/Home'
 import Method from './pages/Method'
+import Region from './pages/Region'
 import Sources from './pages/Sources'
 import Trend from './pages/Trend'
 
@@ -68,6 +69,9 @@ export default function App() {
         break
       case 'anywhere':
         page = <Anywhere cat={c} query={route.query} />
+        break
+      case 'region':
+        page = <Region cat={c} query={route.query} />
         break
       case 'method':
         page = <Method cat={c} />
