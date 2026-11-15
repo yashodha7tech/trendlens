@@ -3,41 +3,50 @@
 **Be an Earth System Trend Detective.** TrendLens is Team Cosmosis's entry for the
 [2026 NASA Space Apps Challenge](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/).
 Pick a place and a question; TrendLens scans NASA Earth science variables, ranks what is
-changing, shows where and by how much, and tests honestly whether each change is
-statistically significant.
+changing, shows where and by how much, tests honestly whether each change is
+statistically significant, and explains why it matters for people.
+
+**Live app: https://trendlens-alpha.vercel.app**
 
 ## What it does
 
 | Step | Screen | What happens |
 |---|---|---|
-| **Ask** | Home | Choose a topic and a region, click any point on Earth, or type a question ("Is it getting hazier over Delhi?"). |
+| **Ask** | Home, Anywhere, Your region | Choose a topic and a region, spin a 3D globe and tap any place (`#/anywhere`), draw any 2–10° box (`#/region`), or type a question ("Is it getting hazier over Delhi?"). |
 | **Find** | Trend Radar (`#/explore/<region>`) | Every variable is tested and ranked by signal-to-noise: how far it moved over its record compared with its normal year-to-year swings. A per-cell map shows where it changes. |
 | **Test** | Trend (`#/trend/<region>/<variable>`) | Monthly series with the seasons removed, yearly averages, Theil-Sen trend with a 95% band, Mann-Kendall p-value corrected for autocorrelation, and a fixed-format plain-language verdict. |
-| **Explain** | Same page, plus Compare | Start-year sensitivity strip, years-of-data-needed estimate, second-opinion tests, weather-station check, false-discovery-controlled trend map, opposite-trends comparison. |
+| **Explain** | Same page, plus Compare | Start-year sensitivity strip, years-of-data-needed estimate, second-opinion tests, weather-station check, false-discovery-controlled trend map, opposite-trends comparison, an **Impact** panel (why the change matters, from 25 cited sources) and "Check it yourself" links to Giovanni, AppEEARS, Worldview and KNMI. |
 
-Extras: three guided demos (a clear trend, a not-yet-significant trend, opposite trends),
-**Anywhere** mode (live NASA POWER data for any grid cell on Earth, plus the nearest NOAA
-station), a practice lab with synthetic data, CSV export, share links and citations.
+Extras: four **Case files** on Home (the detective stories in the data), three guided demos (a
+clear trend, a not-yet-significant trend, opposite trends), a **3D globe** of NASA GIBS imagery
+(Blue Marble or recent MODIS true colour) for live NASA POWER analysis of any grid cell plus the
+nearest NOAA station, **Your region** (live NASA POWER regional data for any box, area-weighted
+land mean and per-cell trend map in the browser), a practice lab with synthetic data, CSV export,
+share links and citations.
 
 ## Data
 
 | Variable | Source | Access | Period |
 |---|---|---|---|
-| Air temperature, rainfall, root-zone soil wetness, land evaporation | MERRA-2 (NASA GMAO) | NASA POWER API | 1981–2025 |
-| Sunlight reaching the ground, aerosol optical depth | CERES SYN1deg (NASA LaRC; MODIS aerosols assimilated) | NASA POWER API | 2001–2025 |
+| Air temperature, hottest-day temperature, rainfall, relative humidity, wind speed, root-zone soil wetness, land evaporation | MERRA-2 (NASA GMAO) | NASA POWER API | 1981–2025 |
+| Sunlight reaching the ground, aerosol optical depth, cloud cover | CERES SYN1deg (NASA LaRC; MODIS aerosols and clouds) | NASA POWER API | 2001–2025 |
 | Tree cover | MODIS Terra MOD44B v061 | ORNL DAAC MODIS web service | 2000–2025 |
+| Vegetation greenness (NDVI) | MODIS Terra MOD13Q1 v061 | ORNL DAAC MODIS web service | 2001–2025 |
 | Station temperature and precipitation (cross-check) | NOAA GSOM | NOAA NCEI Climate Data Online | 1981–2025 |
-| Map imagery | Blue Marble, MODIS Terra true colour, borders | NASA GIBS | — |
+| Map and globe imagery | Blue Marble, MODIS Terra true colour, borders | NASA GIBS (MapLibre globe, Leaflet maps) | — |
 
-Vegetation greenness (NDVI, MODIS MOD13Q1) is wired into the pipeline (`pipeline/modis.py`) but not
-yet in the published data: the ORNL DAAC service returns 10 composites per request at roughly
-30 seconds each and throttles parallel requests, so 25 years for 54 sample sites takes many hours.
-Run `modis.py` to completion and `build.py` adds NDVI everywhere in the app automatically.
+Vegetation greenness comes from 54 MODIS sample sites (nine per region). The ORNL DAAC service
+returns 10 composites per request at roughly 30 seconds each, so `pipeline/modis.py` takes many
+hours; it is resumable, and `build.py` adds NDVI everywhere in the app once it is downloaded
+(`TRENDLENS_SKIP=ndvi` builds without it).
 
-Challenge resources used: **Climate Data Online** (station cross-check, cached and live),
-**Acker et al. (2009), SeaWiFS chlorophyll time-series analysis** (the monthly-anomaly →
-yearly-anomaly → trend-test recipe), and **A Comprehensive Guide to Statistical Significance**
-(how p-values, α and confidence intervals are explained).
+Challenge resources: **Climate Data Online** (station cross-check, cached and live), **Acker et
+al. (2009)** (the monthly-anomaly → yearly-anomaly → trend-test recipe) and **A Comprehensive Guide
+to Statistical Significance** (how p-values, α and confidence intervals are explained) shape the
+data and method. **Giovanni, AppEEARS, Hydrology Time Series and KNMI Climate Explorer** are linked
+from every result page to reproduce it; the Medium trend-tests article and the CSA resources (RCM,
+SWOT, SAR tutorial, GEO.ca) appear on the Method and Prairies pages. The *Data & sources* page lists
+how each one is used.
 
 Featured regions: Central Sahel, Indo-Gangetic Plain, North China Plain, Southern Amazon,
 US Southwest, Canadian Prairies (each ≤ 10° × 10°, land cells only).
@@ -79,8 +88,10 @@ pipeline/        Python: download (power.py, modis.py, cdo.py), statistics (stat
 data/            cleaned regional series as CSV (one file per region and variable)
 public/data/     JSON read by the web app (catalog, per-region series, maps, station checks)
 src/lib/         TypeScript statistics port, data loaders, formatting, demos
-src/components/  charts (SVG + d3-scale), maps (Leaflet + NASA GIBS), radar, demo player
-src/pages/       Home, Explore, Trend, Compare, Anywhere, Method, Sources
+src/components/  charts (SVG + d3-scale), maps (Leaflet + NASA GIBS), 3D globe (MapLibre), radar,
+                 demo player, impact panel, case files, cross-check links
+src/lib/impact.ts     why-it-matters content with sources; src/lib/regional.ts  draw-your-own-region
+src/pages/       Home, Explore, Trend, Compare, Anywhere, Region, Method, Sources
 ```
 
 ## Run it

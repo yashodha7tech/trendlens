@@ -5,7 +5,7 @@ import type { Catalog } from '../lib/types'
 const DATASETS: { name: string; vars: string; via: string; detail: string; cite: string; url: string; needs?: string }[] = [
   {
     name: 'MERRA-2 reanalysis',
-    vars: 'Air temperature, rainfall, root-zone soil wetness, land evaporation',
+    vars: 'Air temperature, hottest-day temperature, rainfall, relative humidity, wind speed, root-zone soil wetness, land evaporation',
     via: 'NASA POWER API (monthly, regional and point)',
     detail: '0.5° × 0.625° grid, January 1981 – December 2025',
     cite: 'Gelaro, R., et al. (2017). The Modern-Era Retrospective Analysis for Research and Applications, Version 2 (MERRA-2). Journal of Climate, 30, 5419–5454.',
@@ -13,7 +13,7 @@ const DATASETS: { name: string; vars: string; via: string; detail: string; cite:
   },
   {
     name: 'CERES SYN1deg',
-    vars: 'Sunlight reaching the ground; aerosol optical depth (MODIS aerosols assimilated)',
+    vars: 'Sunlight reaching the ground; cloud cover; aerosol optical depth (MODIS aerosols assimilated)',
     via: 'NASA POWER API',
     detail: '1° × 1° grid, January 2001 – December 2025',
     cite: 'Doelling, D. R., et al. (2013). Geostationary enhanced temporal interpolation for CERES flux products. Journal of Atmospheric and Oceanic Technology, 30, 1072–1090.',
@@ -46,7 +46,7 @@ const DATASETS: { name: string; vars: string; via: string; detail: string; cite:
   },
   {
     name: 'NASA GIBS imagery',
-    vars: 'Map backgrounds: Blue Marble relief, MODIS Terra true colour, coastlines and labels',
+    vars: 'Map and 3D globe imagery: Blue Marble relief, MODIS Terra true colour, borders and coastlines',
     via: 'GIBS WMTS (Web Mercator)',
     detail: 'Near-real-time MODIS imagery from a few days ago',
     cite: "We acknowledge the use of imagery from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS).",
