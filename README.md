@@ -6,7 +6,7 @@ Pick a place and a question; TrendLens scans NASA Earth science variables, ranks
 changing, shows where and by how much, tests honestly whether each change is
 statistically significant, and explains why it matters for people.
 
-**Live app: https://trendlens-alpha.vercel.app**
+**Live app: https://cosmosis.earth**
 
 ## What it does
 

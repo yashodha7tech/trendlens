@@ -2,7 +2,7 @@
 
 Team Cosmosis · NASA Space Apps Challenge 2026 · *Be an Earth System Trend Detective!*
 
-- **Live app:** https://trendlens-alpha.vercel.app
+- **Live app:** https://cosmosis.earth (also https://trendlens-alpha.vercel.app)
 - **Code:** https://github.com/yashodha7tech/trendlens
 
 Numbers below come from the data build of 15 November 2026 (MERRA-2 and CERES via NASA POWER,
