@@ -87,6 +87,29 @@ const REFS = [
   'Yue, S., & Wang, C. (2004). The Mann-Kendall test modified by effective sample size to detect trend in serially correlated hydrological series. Water Resources Management, 18, 201–218.',
 ]
 
+
+type Use = 'Used' | 'Equivalent used' | 'Not used'
+const CHALLENGE: { name: string; url: string; use: Use; how: string }[] = [
+  { name: 'Climate Data Online (NOAA NCEI)', url: 'https://www.ncei.noaa.gov/cdo-web/', use: 'Used', how: 'Weather-station records (GSOM) cross-check every featured temperature and rainfall trend, and Anywhere mode fetches the nearest station live.' },
+  { name: 'Acker et al. (2009), SeaWiFS chlorophyll time-series analysis', url: 'https://ntrs.nasa.gov/api/citations/20090042747/downloads/20090042747.pdf', use: 'Used', how: 'Our recipe follows it: monthly values, seasonal cycle removed, yearly anomalies, then a trend test with a significance level.' },
+  { name: 'A Comprehensive Guide to Statistical Significance (Statsig)', url: 'https://www.statsig.com/perspectives/a-comprehensive-guide-to-statistical-significance', use: 'Used', how: 'Shapes how p-values, the 5% level and confidence intervals are explained on the Method page and in every verdict sentence.' },
+  { name: 'Giovanni (NASA GES DISC)', url: 'https://giovanni.gsfc.nasa.gov/', use: 'Equivalent used', how: 'TrendLens gets the same MERRA-2 and CERES records through NASA POWER, which needs no login and allows browser requests. Giovanni is the place to cross-check an area-averaged series.' },
+  { name: 'AppEEARS (NASA LP DAAC)', url: 'https://appeears.earthdatacloud.nasa.gov/', use: 'Equivalent used', how: 'MODIS tree cover (MOD44B) and greenness (MOD13Q1) come from the ORNL DAAC MODIS web service, which serves the same products without a login.' },
+  { name: 'Hydrology Time Series (GES DISC)', url: 'https://disc.gsfc.nasa.gov/information/tools?title=Hydrology%20Time%20Series', use: 'Equivalent used', how: 'Soil wetness and land evaporation come from MERRA-2 via NASA POWER rather than GLDAS or NLDAS data rods.' },
+  { name: 'KNMI Climate Explorer', url: 'https://climexp.knmi.nl/', use: 'Not used', how: 'A good independent tool for checking a TrendLens trend with other datasets.' },
+  { name: 'Statistical test methods to detect trends (Medium)', url: 'https://medium.com/@snp.kriss/statistical-test-methods-to-detect-trends-in-time-series-data-b361a0ec530b', use: 'Not used', how: 'Further reading on the family of tests TrendLens uses (Mann-Kendall, Sen slope, t-test).' },
+  { name: 'CSA: RADARSAT Constellation Mission data, SWOT, SAR tutorial', url: 'https://donnees-data.asc-csa.gc.ca/en/dataset/rcm', use: 'Not used', how: 'RCM (launched 2019) and SWOT (launched December 2022) records are still too short for the 20+ year trends TrendLens tests.' },
+  { name: 'Geo.ca and CSA ecosystem monitoring', url: 'https://geo.ca/', use: 'Not used', how: 'Relevant context for the Canadian Prairies region; not a data source here.' },
+]
+const INSTRUMENTS: [string, Use, string][] = [
+  ['MERRA-2', 'Used', 'Air and hottest-day temperature, rainfall, humidity, wind, soil wetness, evaporation'],
+  ['MODIS', 'Used', 'Tree cover and vegetation greenness; MODIS aerosols and clouds feed the CERES products'],
+  ['GPM', 'Equivalent used', 'Rainfall comes from MERRA-2 (POWER PRECTOTCORR), a 1981+ record; GPM IMERG starts in 2000 and needs an Earthdata login'],
+  ['GLDAS', 'Equivalent used', 'Soil wetness and evaporation come from MERRA-2'],
+  ['OMI', 'Not used', 'Aerosol optical depth comes from CERES/MODIS instead'],
+  ['AIRS', 'Not used', 'Upper-air variables are outside the current scope'],
+]
+
 export default function Sources({ cat }: { cat: Catalog }) {
   useTitle('Data & sources')
   return (
@@ -194,6 +217,54 @@ export default function Sources({ cat }: { cat: Catalog }) {
                 </div>
               ))}
             </dl>
+          </div>
+        </div>
+      </section>
+      <section className="section" id="challenge-resources">
+        <div className="wrap">
+          <div className="section-head">
+            <div>
+              <span className="eyebrow">Be an Earth System Trend Detective</span>
+              <h2>Challenge resources and how TrendLens uses them</h2>
+            </div>
+          </div>
+          <div className="table-scroll">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Resource</th>
+                  <th>In TrendLens</th>
+                  <th>How</th>
+                </tr>
+              </thead>
+              <tbody>
+                {CHALLENGE.map((r) => (
+                  <tr key={r.name}>
+                    <td>
+                      <a href={r.url} target="_blank" rel="noreferrer">
+                        {r.name}
+                      </a>
+                    </td>
+                    <td style={{ whiteSpace: 'nowrap' }}>{r.use}</td>
+                    <td>{r.how}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <h3 style={{ margin: '28px 0 10px' }}>Instruments and models named in the challenge</h3>
+          <div className="table-scroll">
+            <table className="table">
+              <tbody>
+                {INSTRUMENTS.map(([n, u, how]) => (
+                  <tr key={n}>
+                    <td style={{ fontWeight: 600 }}>{n}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}>{u}</td>
+                    <td>{how}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
