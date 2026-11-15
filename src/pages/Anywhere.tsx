@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Dir, ErrorBox } from '../components/bits'
 import GlobeLoader, { featuredRegions, parseLatLon, prefersReducedMotion, webglSupported } from '../components/GlobeLoader'
 import Radar, { rankItems } from '../components/Radar'
@@ -81,7 +81,10 @@ export default function Anywhere({ cat, query }: { cat: Catalog; query: URLSearc
     }
   }
 
-  const card = has ? <PickCard cat={cat} lat={lat!} lon={lon!} name={name} /> : null
+  // After a failed NASA POWER request, "Try again" remounts the card and the radar so both fetch afresh
+  // (loadPoint drops failed requests from its cache).
+  const [attempt, setAttempt] = useState(0)
+  const card = has ? <PickCard key={attempt} cat={cat} lat={lat!} lon={lon!} name={name} onRetry={() => setAttempt((n) => n + 1)} /> : null
 
   return (
     <>
@@ -205,7 +208,7 @@ export default function Anywhere({ cat, query }: { cat: Catalog; query: URLSearc
         </div>
       </div>
       {has ? (
-        <div id="any-results">
+        <div id="any-results" key={attempt}>
           <PointRadar cat={cat} lat={lat!} lon={lon!} name={name} wanted={wanted} />
         </div>
       ) : (
@@ -216,9 +219,24 @@ export default function Anywhere({ cat, query }: { cat: Catalog; query: URLSearc
 }
 
 /** The picked point and the headline of its live result, next to the globe. */
-function PickCard({ cat, lat, lon, name }: { cat: Catalog; lat: number; lon: number; name?: string }) {
-  const place = useAsync(() => loadPoint(cat, lat, lon, name), [lat, lon])
-  const fresh = place.data && place.data.lat === lat && place.data.lon === lon ? place.data : undefined
+function PickCard({ cat, lat, lon, name, onRetry }: { cat: Catalog; lat: number; lon: number; name?: string; onRetry: () => void }) {
+  // Tagged with the point it was fetched for, so a new pick never shows the previous spot's numbers.
+  // (loadPoint shares its fetch with the radar below and may return a cached neighbour within 0.01°.)
+  const key = `${lat},${lon}`
+  const [res, setRes] = useState<{ key: string; place?: Place; error?: boolean }>()
+  useEffect(() => {
+    let live = true
+    loadPoint(cat, lat, lon, name).then(
+      (p) => live && setRes({ key, place: p }),
+      () => live && setRes({ key, error: true }),
+    )
+    return () => {
+      live = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key])
+  const place = res?.key === key ? res : undefined
+  const fresh = place?.place
   const items = useMemo(() => (fresh ? rankItems(analysesFor(fresh)) : null), [fresh])
   const sig = items?.filter((i) => i.a.verdict === 'significant') ?? []
   const top = sig[0]
@@ -232,8 +250,8 @@ function PickCard({ cat, lat, lon, name }: { cat: Catalog; lat: number; lon: num
       <span className="any-pick-name">{name ?? formatLatLon(lat, lon)}</span>
       {name && <span className="any-pick-coords">{formatLatLon(lat, lon)}</span>}
       <p className="any-pick-status">
-        {place.error ? (
-          'NASA POWER could not be reached. Try again in a moment.'
+        {place?.error ? (
+          'NASA POWER could not be reached. The network may be busy.'
         ) : !items ? (
           'Fetching monthly NASA POWER data since 1981…'
         ) : (
@@ -252,12 +270,20 @@ function PickCard({ cat, lat, lon, name }: { cat: Catalog; lat: number; lon: num
           </>
         )}
       </p>
-      {items && (
+      {place?.error ? (
         <div className="any-pick-actions">
-          <button type="button" className="btn small" onClick={toResults}>
-            See the evidence ↓
+          <button type="button" className="btn small" onClick={onRetry}>
+            Try again
           </button>
         </div>
+      ) : (
+        items && (
+          <div className="any-pick-actions">
+            <button type="button" className="btn small" onClick={toResults}>
+              See the evidence ↓
+            </button>
+          </div>
+        )
       )}
     </div>
   )

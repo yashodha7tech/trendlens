@@ -39,6 +39,7 @@ export interface GlobeCamera {
 }
 
 export interface GlobeProps {
+  /** Featured regions to outline (read when the globe is created, like initialView and autoRotate). */
   regions: GlobeRegion[]
   /** Called with the place the user clicked, tapped or chose with the keyboard. */
   onPick?: (lat: number, lon: number) => void
@@ -56,6 +57,8 @@ export interface GlobeProps {
   onFail?: (why: string) => void
   /** Shown directly under the globe, above the region list (for example the picked point's result). */
   children?: ReactNode
+  /** Extra class on the root (and the loading placeholder), e.g. to size it elsewhere: `.my-hero :is(.globe-stage, .globe-skeleton) { height: 70vh }`. */
+  className?: string
 }
 
 /**
@@ -141,11 +144,13 @@ class Boundary extends Component<{ onFail?: (why: string) => void; children: Rea
   }
 }
 
-function Skeleton() {
+function Skeleton({ className }: { className?: string }) {
   return (
-    <div className="globe-skeleton" role="status">
-      <span className="globe-skeleton-orb" aria-hidden="true" />
-      <span className="globe-skeleton-text">Loading the globe…</span>
+    <div className={className ? `globe ${className}` : 'globe'}>
+      <div className="globe-skeleton" role="status">
+        <span className="globe-skeleton-orb" aria-hidden="true" />
+        <span className="globe-skeleton-text">Loading the globe…</span>
+      </div>
     </div>
   )
 }
@@ -154,7 +159,7 @@ function Skeleton() {
 export default function GlobeLoader(props: GlobeProps) {
   return (
     <Boundary onFail={props.onFail}>
-      <Suspense fallback={<Skeleton />}>
+      <Suspense fallback={<Skeleton className={props.className} />}>
         <Globe {...props} />
       </Suspense>
     </Boundary>

@@ -174,6 +174,7 @@ export default function Globe({
   label = 'Interactive globe. Drag or use the arrow keys to turn it, plus and minus to zoom, Enter to investigate the spot under the crosshair.',
   onFail,
   children,
+  className,
 }: GlobeProps) {
   const canvasEl = useRef<HTMLDivElement>(null)
   const api = useRef<{
@@ -441,7 +442,7 @@ export default function Globe({
 
   const shortDate = new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })
   return (
-    <div className="globe">
+    <div className={className ? `globe ${className}` : 'globe'}>
       <div className="globe-stage">
         <div className="globe-canvas" ref={canvasEl} />
         <span className="globe-cross" aria-hidden="true" />
