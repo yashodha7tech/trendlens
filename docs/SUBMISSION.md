@@ -26,9 +26,9 @@ properly. TrendLens removes all three in one guided workflow:
 1. **Ask.** Choose a topic (heat, water and rain, vegetation, air and sunlight) and one of six
    featured regions, spin a 3D globe and tap any place, draw your own region, or type a question
    such as "Is it getting hazier over Delhi?".
-2. **Find.** The Trend Radar tests 11 NASA variables (air and hottest-day temperature, rainfall,
-   humidity, root-zone soil wetness, land evaporation, tree cover, aerosol optical depth, sunlight
-   reaching the ground, cloud cover, wind speed) and ranks them by signal-to-noise. Each comes with
+2. **Find.** The Trend Radar tests 12 NASA variables (air and hottest-day temperature, rainfall,
+   humidity, root-zone soil wetness, land evaporation, vegetation greenness, tree cover, aerosol
+   optical depth, sunlight reaching the ground, cloud cover, wind speed) and ranks them by signal-to-noise. Each comes with
    a plain-language definition, its NASA source and a significance badge.
 3. **Test.** Open a variable: 25 to 45 years of data (monthly with the seasonal cycle removed;
    yearly for tree cover), yearly averages, a Theil-Sen trend line with its 95% band, and a
@@ -50,7 +50,7 @@ cell.
 
 | Objective | TrendLens |
 |---|---|
-| Identify variables of interest | Guided questions, keyword question matching, Trend Radar ranking of 11 variables, plain-language definitions, impact notes |
+| Identify variables of interest | Guided questions, keyword question matching, Trend Radar ranking of 12 variables, plain-language definitions, impact notes |
 | Acquire data for a region | Six featured regions (area-weighted land cells, cached), **any region you draw** (live NASA POWER regional data), and any point on a 3D globe |
 | Generate and visualise a long time series | 1981–2025 for MERRA-2, 2000/2001–2025 for CERES and MODIS; raw and seasons-removed views; per-cell trend maps |
 | Rate of change and significance | Theil-Sen slope per decade with 95% interval, Mann-Kendall p-value corrected for autocorrelation, least-squares t-test |
@@ -81,7 +81,7 @@ show the tool before you use it. Every resource on the challenge's Resources tab
   of the test.
 
 **Creativity.**
-- Trend Radar ranking and an automatic opposite-trend finder (31 opposite pairs across 9 variables).
+- Trend Radar ranking and an automatic opposite-trend finder (33 opposite pairs across 10 variables).
 - A start-year sensitivity strip that reveals non-linear stories (North China haze: not
   significant from 2001, significant from 2005 onward).
 - A 3D globe and draw-your-own-region analysis, live, anywhere on Earth.
@@ -106,13 +106,14 @@ every chart.
 | Southern Amazon, hottest-day temperature and humidity | +0.76 °C and −2.6 percentage points of humidity per decade, both p < 0.001 |
 | Southern Amazon, rainfall | −0.48 mm/day per decade (−9.7% of average), p < 0.001 |
 | Southern Amazon, tree cover | −6.4 percentage points per decade, p < 0.001 |
+| Vegetation greenness (NDVI), Indo-Gangetic Plain vs Southern Amazon | +0.041 vs −0.021 per decade, both significant: farmland greening, forest browning |
 | Canadian Prairies, air temperature | +0.15 °C per decade, p = 0.26, not significant yet; a trend this size needs ≈ 75 years of data (we have 45). 25 NOAA stations agree that neither trend is significant (r = 0.97) |
 | Indo-Gangetic Plain vs North China Plain, sunlight at the ground | −0.70 vs +0.55 MJ/m²/day per decade, both significant: opposite directions |
 | Indo-Gangetic Plain vs North China Plain, cloud cover | +4.2 vs −1.9 percentage points per decade, both significant: opposite directions |
 | Indo-Gangetic Plain, aerosol optical depth | +0.088 per decade, p < 0.001 |
 | North China Plain, aerosol optical depth | Not significant from 2001 (rise then fall); significant decline for any start year from 2005 |
 
-39 of 66 region–variable trends are significant at the 5% level.
+42 of 72 region–variable trends are significant at the 5% level.
 
 ## Demo video script (about 2 min 50 s)
 
@@ -120,7 +121,7 @@ every chart.
 |---|---|---|
 | 0:00–0:10 | Home hero | "NASA measures hundreds of things about our planet. But is any one of them really changing where you live, or is it just noise?" |
 | 0:10–0:30 | Case files | "TrendLens is a detective's notebook. Each case starts with a question, follows the clues in NASA data, and ends with an honest verdict and what it means for people." |
-| 0:30–1:00 | Case 01 → Trend Radar for the southern Amazon, then the map | "Case one: the southern Amazon. The Trend Radar tests 11 NASA variables and ranks them by how far they moved compared with normal year-to-year swings. Hotter, drier, fewer trees: several variables, one story. The map shows it grid cell by grid cell, with false-discovery control so luck doesn't paint the map." |
+| 0:30–1:00 | Case 01 → Trend Radar for the southern Amazon, then the map | "Case one: the southern Amazon. The Trend Radar tests 12 NASA variables and ranks them by how far they moved compared with normal year-to-year swings. Hotter, drier, fewer trees: several variables, one story. The map shows it grid cell by grid cell, with false-discovery control so luck doesn't paint the map." |
 | 1:00–1:25 | Air temperature result, sensitivity strip, Impact panel | "+0.48 °C per decade, p below 0.001. 29 of 36 start years give the same verdict. And here's why it matters: heat, harvests, water. The test says whether it changed; published research says why that matters." |
 | 1:25–1:45 | Case 03: Canadian Prairies | "Honesty matters too. Prairie temperatures rise 0.15 °C per decade, but we can't rule out chance. A trend this size needs about 75 years of data; we have 45. Not guilty yet." |
 | 1:45–2:05 | Case 02 → Compare: sunlight, India vs China | "Same variable, opposite directions. Sunlight at the ground is falling over India and rising over China, where air pollution was cut. One process, haze, explains both." |

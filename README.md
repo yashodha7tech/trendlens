@@ -35,7 +35,7 @@ share links and citations.
 | Station temperature and precipitation (cross-check) | NOAA GSOM | NOAA NCEI Climate Data Online | 1981–2025 |
 | Map and globe imagery | Blue Marble, MODIS Terra true colour, borders | NASA GIBS (MapLibre globe, Leaflet maps) | — |
 
-Vegetation greenness comes from 54 MODIS sample sites (nine per region). The ORNL DAAC service
+Vegetation greenness comes from 54 MODIS sample sites (nine per region; 3,510 requests in all). The ORNL DAAC service
 returns 10 composites per request at roughly 30 seconds each, so `pipeline/modis.py` takes many
 hours; it is resumable, and `build.py` adds NDVI everywhere in the app once it is downloaded
 (`TRENDLENS_SKIP=ndvi` builds without it).
