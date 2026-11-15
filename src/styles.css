@@ -463,3 +463,9 @@ input[type='range'] { accent-color: var(--ink); width: 100%; }
 .region-progress ul { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 2px; }
 .region-bar { height: 4px; background: var(--paper-3); margin-top: 10px; }
 .region-bar span { display: block; height: 4px; background: var(--nasa-red); transition: width 0.3s; }
+
+/* check it yourself */
+.crosscheck-list { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 8px; }
+.crosscheck-list li { display: grid; gap: 2px; padding: 8px 0 8px 12px; border-left: 2px solid var(--nasa-blue); }
+.crosscheck-list a { font-weight: 600; color: var(--nasa-blue); }
+.crosscheck-list .small { color: var(--ink-2); }

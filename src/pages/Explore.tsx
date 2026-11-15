@@ -98,6 +98,16 @@ function RegionRadar({ cat, region, topic, variable }: { cat: Catalog; region: s
           </nav>
           <span className="eyebrow">Step 2 · Find · Trend Radar</span>
           <h1 style={{ marginTop: 12 }}>What is changing in the {reg.name}?</h1>
+          {region === 'prairies' && (
+            <p className="small" style={{ marginTop: 10 }}>
+              Canadian data and context:{' '}
+              <a href="https://geo.ca/" target="_blank" rel="noreferrer">GEO.ca</a> ·{' '}
+              <a href="https://www.asc-csa.gc.ca/eng/satellites/everyday-lives/monitoring-and-protecting-our-ecosystems-from-space.asp" target="_blank" rel="noreferrer">
+                CSA: monitoring ecosystems from space
+              </a>{' '}
+              · <a href="https://donnees-data.asc-csa.gc.ca/en/dataset/rcm" target="_blank" rel="noreferrer">RADARSAT Constellation Mission data</a>
+            </p>
+          )}
           <p className="lede">{reg.why}</p>
           <dl className="kv" style={{ marginTop: 18 }}>
             <dt>Area</dt>

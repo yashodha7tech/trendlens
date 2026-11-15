@@ -88,18 +88,18 @@ const REFS = [
 ]
 
 
-type Use = 'Used' | 'Equivalent used' | 'Not used'
+type Use = 'Used' | 'Equivalent used' | 'Linked' | 'Not used'
 const CHALLENGE: { name: string; url: string; use: Use; how: string }[] = [
   { name: 'Climate Data Online (NOAA NCEI)', url: 'https://www.ncei.noaa.gov/cdo-web/', use: 'Used', how: 'Weather-station records (GSOM) cross-check every featured temperature and rainfall trend, and Anywhere mode fetches the nearest station live.' },
   { name: 'Acker et al. (2009), SeaWiFS chlorophyll time-series analysis', url: 'https://ntrs.nasa.gov/api/citations/20090042747/downloads/20090042747.pdf', use: 'Used', how: 'Our recipe follows it: monthly values, seasonal cycle removed, yearly anomalies, then a trend test with a significance level.' },
   { name: 'A Comprehensive Guide to Statistical Significance (Statsig)', url: 'https://www.statsig.com/perspectives/a-comprehensive-guide-to-statistical-significance', use: 'Used', how: 'Shapes how p-values, the 5% level and confidence intervals are explained on the Method page and in every verdict sentence.' },
-  { name: 'Giovanni (NASA GES DISC)', url: 'https://giovanni.gsfc.nasa.gov/', use: 'Equivalent used', how: 'TrendLens gets the same MERRA-2 and CERES records through NASA POWER, which needs no login and allows browser requests. Giovanni is the place to cross-check an area-averaged series.' },
-  { name: 'AppEEARS (NASA LP DAAC)', url: 'https://appeears.earthdatacloud.nasa.gov/', use: 'Equivalent used', how: 'MODIS tree cover (MOD44B) and greenness (MOD13Q1) come from the ORNL DAAC MODIS web service, which serves the same products without a login.' },
-  { name: 'Hydrology Time Series (GES DISC)', url: 'https://disc.gsfc.nasa.gov/information/tools?title=Hydrology%20Time%20Series', use: 'Equivalent used', how: 'Soil wetness and land evaporation come from MERRA-2 via NASA POWER rather than GLDAS or NLDAS data rods.' },
-  { name: 'KNMI Climate Explorer', url: 'https://climexp.knmi.nl/', use: 'Not used', how: 'A good independent tool for checking a TrendLens trend with other datasets.' },
-  { name: 'Statistical test methods to detect trends (Medium)', url: 'https://medium.com/@snp.kriss/statistical-test-methods-to-detect-trends-in-time-series-data-b361a0ec530b', use: 'Not used', how: 'Further reading on the family of tests TrendLens uses (Mann-Kendall, Sen slope, t-test).' },
-  { name: 'CSA: RADARSAT Constellation Mission data, SWOT, SAR tutorial', url: 'https://donnees-data.asc-csa.gc.ca/en/dataset/rcm', use: 'Not used', how: 'RCM (launched 2019) and SWOT (launched December 2022) records are still too short for the 20+ year trends TrendLens tests.' },
-  { name: 'Geo.ca and CSA ecosystem monitoring', url: 'https://geo.ca/', use: 'Not used', how: 'Relevant context for the Canadian Prairies region; not a data source here.' },
+  { name: 'Giovanni (NASA GES DISC)', url: 'https://giovanni.gsfc.nasa.gov/', use: 'Equivalent used', how: 'TrendLens gets the same MERRA-2 and CERES records through NASA POWER (no login, browser-friendly). Every result page links to Giovanni to reproduce the area-averaged series.' },
+  { name: 'AppEEARS (NASA LP DAAC)', url: 'https://appeears.earthdatacloud.nasa.gov/', use: 'Equivalent used', how: 'MODIS tree cover (MOD44B) and greenness (MOD13Q1) come from the ORNL DAAC MODIS web service, which serves the same products without a login. MODIS result pages link to AppEEARS for full-resolution extracts.' },
+  { name: 'Hydrology Time Series (GES DISC)', url: 'https://disc.gsfc.nasa.gov/information/tools?title=Hydrology%20Time%20Series', use: 'Equivalent used', how: 'Soil wetness, evaporation and rainfall come from MERRA-2 via NASA POWER; their result pages link to Hydrology Time Series to compare with GLDAS and NLDAS.' },
+  { name: 'KNMI Climate Explorer', url: 'https://climexp.knmi.nl/', use: 'Linked', how: 'Every result page links to it under "Check it yourself", to test the trend against other datasets.' },
+  { name: 'Statistical test methods to detect trends (Medium)', url: 'https://medium.com/@snp.kriss/statistical-test-methods-to-detect-trends-in-time-series-data-b361a0ec530b', use: 'Linked', how: 'Further reading on the Method page for the family of tests TrendLens uses (Mann-Kendall, Sen slope, t-test).' },
+  { name: 'CSA: RADARSAT Constellation Mission data, SWOT, SAR tutorial', url: 'https://donnees-data.asc-csa.gc.ca/en/dataset/rcm', use: 'Linked', how: 'The Method page uses RCM (launched 2019) and SWOT (December 2022) to teach why a trend needs a long record, and links the SAR tutorial to start working with radar data.' },
+  { name: 'Geo.ca and CSA ecosystem monitoring', url: 'https://geo.ca/', use: 'Linked', how: 'Linked from the Canadian Prairies region page and the Method page as Canadian data and context.' },
 ]
 const INSTRUMENTS: [string, Use, string][] = [
   ['MERRA-2', 'Used', 'Air and hottest-day temperature, rainfall, humidity, wind, soil wetness, evaporation'],

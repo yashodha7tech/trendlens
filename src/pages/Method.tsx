@@ -139,6 +139,54 @@ export default function Method({ cat }: { cat: Catalog }) {
         </div>
       </section>
 
+      <section className="section" id="new-missions">
+        <div className="wrap grid-2" style={{ alignItems: 'start' }}>
+          <div>
+            <span className="eyebrow">Why some new missions are not here yet</span>
+            <h3 style={{ margin: '10px 0 12px' }}>A trend needs a long record</h3>
+            <p className="small" style={{ color: 'var(--ink-2)' }}>
+              Radar satellites such as the Canadian Space Agency's{' '}
+              <a href="https://donnees-data.asc-csa.gc.ca/en/dataset/rcm" target="_blank" rel="noreferrer">RADARSAT Constellation Mission</a> (launched
+              2019) and the NASA–CNES{' '}
+              <a href="https://www.asc-csa.gc.ca/eng/satellites/swot/" target="_blank" rel="noreferrer">SWOT</a> mission (launched December 2022) see
+              wetlands, ice, crops and river levels in new detail. But with only a few years of data, the test above cannot separate a real trend from
+              normal year-to-year swings: the "years of data needed" estimate on every result is usually far longer. They are the trend records of
+              the 2040s. To start working with radar imagery now, see the CSA{' '}
+              <a href="https://github.com/asc-csa/Synthetic_Aperture_Radar_Tutorial" target="_blank" rel="noreferrer">SAR Python tutorial</a>, and for how
+              Canada already uses these satellites to watch ecosystems, the CSA page on{' '}
+              <a href="https://www.asc-csa.gc.ca/eng/satellites/everyday-lives/monitoring-and-protecting-our-ecosystems-from-space.asp" target="_blank" rel="noreferrer">
+                monitoring ecosystems from space
+              </a>{' '}
+              and Canada's open geospatial portal{' '}
+              <a href="https://geo.ca/" target="_blank" rel="noreferrer">GEO.ca</a>.
+            </p>
+          </div>
+          <div>
+            <span className="eyebrow">Further reading</span>
+            <h3 style={{ margin: '10px 0 12px' }}>The ideas behind the tests</h3>
+            <ul className="small" style={{ paddingLeft: 18, color: 'var(--ink-2)', display: 'grid', gap: 6 }}>
+              <li>
+                <a href="https://www.statsig.com/perspectives/a-comprehensive-guide-to-statistical-significance" target="_blank" rel="noreferrer">
+                  A Comprehensive Guide to Statistical Significance
+                </a>{' '}
+                (Statsig): p-values, the 5% level and confidence intervals, as used in every verdict.
+              </li>
+              <li>
+                <a href="https://medium.com/@snp.kriss/statistical-test-methods-to-detect-trends-in-time-series-data-b361a0ec530b" target="_blank" rel="noreferrer">
+                  Statistical test methods to detect trends in time series data
+                </a>
+                : an overview of the family of tests used here (Mann-Kendall, Sen's slope, regression t-test).
+              </li>
+              <li>
+                <a href="https://ntrs.nasa.gov/api/citations/20090042747/downloads/20090042747.pdf" target="_blank" rel="noreferrer">
+                  Acker et al. (2009)
+                </a>
+                : the monthly-anomaly, yearly-average, trend-test recipe TrendLens follows.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
       <section className="section">
         <div className="wrap">
           <div className="section-head">

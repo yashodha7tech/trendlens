@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Badge, Dir, ErrorBox, Loading, SensitivityStrip } from '../components/bits'
 import { ImpactPanel } from '../components/Impact'
+import CrossCheck from '../components/CrossCheck'
 import StationChart from '../components/StationChart'
 import TimeSeriesChart from '../components/TimeSeriesChart'
 import TrendMap from '../components/TrendMap'
@@ -293,6 +294,9 @@ function TrendView({ cat, place, vid, query }: { cat: Catalog; place: Place; vid
             <span className="eyebrow">Take the evidence with you</span>
             <h3 style={{ margin: '10px 0 14px' }}>Data, link and citation</h3>
             <Exports place={place} vid={vid} meta={meta} a={a} full={full} />
+            <div style={{ marginTop: 28 }}>
+              <CrossCheck vid={vid} bbox={place.kind === 'region' ? place.bbox : undefined} point={place.kind === 'point' ? [place.lat, place.lon] : undefined} />
+            </div>
           </div>
           <div>
             <span className="eyebrow">How this result was calculated</span>
