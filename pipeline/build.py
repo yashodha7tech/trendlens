@@ -3,6 +3,11 @@
   python build.py            -> public/data/catalog.json, public/data/regions/<id>.json,
                                 data/<region>_<variable>.csv (cleaned regional series)
 
+  TRENDLENS_SKIP=ndvi python build.py
+                             -> the same, but leaves out the listed variables (comma-separated
+                                ids from config.py). Use it to publish without a variable whose
+                                download is still incomplete, such as NDVI. Default: skip nothing.
+
 Inputs are the cached downloads from power.py, modis.py and cdo.py.
 """
 from __future__ import annotations
@@ -10,6 +15,7 @@ from __future__ import annotations
 import csv
 import datetime as dt
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -24,6 +30,16 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "data"
 CSV_DIR = ROOT / "data"
 MIN_YEARS = 15
+
+
+def skipped(env: str | None = None) -> set[str]:
+    """Variable ids to leave out of this build, from TRENDLENS_SKIP (e.g. "ndvi" or "ndvi,tree")."""
+    raw = os.environ.get("TRENDLENS_SKIP", "") if env is None else env
+    out = {s.strip().lower() for s in raw.split(",") if s.strip()}
+    unknown = out - set(VARIABLES)
+    if unknown:
+        raise SystemExit(f"TRENDLENS_SKIP: unknown variable(s) {sorted(unknown)}; choose from {sorted(VARIABLES)}")
+    return out
 
 
 def rnd(x, d=4):
@@ -262,6 +278,9 @@ def station_check(rid: str, land_grid: dict) -> dict:
 # ---------------------------------------------------------------- main
 
 def main() -> None:
+    skip = skipped()
+    if skip:
+        print("skipping", ", ".join(sorted(skip)), "(TRENDLENS_SKIP)", flush=True)
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "regions").mkdir(exist_ok=True)
     CSV_DIR.mkdir(exist_ok=True)
@@ -282,6 +301,11 @@ def main() -> None:
         region_out = {"id": rid, "series": {}, "maps": {}}
         results = {}
         for vid, meta in VARIABLES.items():
+            if vid in skip:
+                stale = CSV_DIR / f"{rid}_{vid}.csv"
+                if stale.exists():  # left over from an earlier full build: don't publish it either
+                    stale.unlink()
+                continue
             if "power" in meta:
                 years, months, series, cmap = power_variable(rid, vid, land_grid, land)
                 per_year = 12

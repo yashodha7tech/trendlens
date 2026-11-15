@@ -67,16 +67,32 @@ export function analyzeSeries(s: SeriesJSON, from?: number): Analysis {
 
 // ------------------------------------------------------------------ live mode (any point on Earth)
 
+/** TrendLens variable id -> NASA POWER parameter (the same codes as pipeline/config.py). */
 const POWER_PARAMS: Record<string, string> = {
   t2m: 'T2M',
+  tmax: 'T2M_MAX',
   precip: 'PRECTOTCORR',
   soil: 'GWETROOT',
   evap: 'EVLAND',
+  humidity: 'RH2M',
   aod: 'AOD_55_ADJ',
   sun: 'ALLSKY_SFC_SW_DWN',
+  cloud: 'CLOUD_AMT',
+  wind: 'WS2M',
 }
 
 export const LIVE_VARIABLES = Object.keys(POWER_PARAMS)
+
+/** POWER request URL for one grid cell: every live variable the catalog knows, in one call. */
+export function pointUrl(cat: Catalog, lat: number, lon: number): string {
+  const codes = Object.entries(POWER_PARAMS)
+    .filter(([vid]) => cat.variables[vid])
+    .map(([, code]) => code)
+  return (
+    `https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=${codes.join(',')}` +
+    `&community=AG&longitude=${lon.toFixed(3)}&latitude=${lat.toFixed(3)}&start=1981&end=${cat.end_year}&format=JSON`
+  )
+}
 
 /** Fetch every POWER variable for one grid cell straight from NASA POWER (CORS-enabled). */
 export function loadPoint(cat: Catalog, lat: number, lon: number, label?: string): Promise<Place> {
@@ -84,15 +100,13 @@ export function loadPoint(cat: Catalog, lat: number, lon: number, label?: string
   if (pointCache.has(key)) return pointCache.get(key)!
   const p = (async () => {
     const end = cat.end_year
-    const url =
-      `https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=${Object.values(POWER_PARAMS).join(',')}` +
-      `&community=AG&longitude=${lon.toFixed(3)}&latitude=${lat.toFixed(3)}&start=1981&end=${end}&format=JSON`
-    const raw = await getJSON<any>(url)
+    const raw = await getJSON<any>(pointUrl(cat, lat, lon))
     const params = raw?.properties?.parameter
     if (!params) throw new Error('NASA POWER returned no data for this point.')
     const series: Record<string, SeriesJSON> = {}
     const missing: Record<string, string> = {}
     for (const [vid, code] of Object.entries(POWER_PARAMS)) {
+      if (!cat.variables[vid]) continue // an older catalog without this variable
       const start = cat.variables[vid].start
       const vals: (number | null)[] = []
       for (let y = start; y <= end; y++)
