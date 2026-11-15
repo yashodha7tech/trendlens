@@ -199,6 +199,15 @@ label.field > span { font-family: var(--mono); font-size: 12px; letter-spacing: 
     radial-gradient(ellipse 55% 120% at 88% 10%, var(--space-glow), transparent 70%),
     linear-gradient(180deg, var(--night) 0%, var(--space) 100%);
 }
+/* The Anywhere globe head styles its own dark surface and white cards with the base tokens,
+   so give it the light-scheme token values back. */
+.page-head.any-head {
+  --ink: #0b1526; --ink-2: #2b3648; --muted: #5a6577; --faint: #8a94a6;
+  --paper: #ffffff; --paper-2: #f2f5fa; --paper-3: #e4eaf3;
+  --rule: #dbe2ec; --rule-strong: #b6c1d3; --flat: #8a94a6;
+  --rise-ink: #1c5cab; --fall-ink: #b2420c;
+  color: #fff;
+}
 .page-head h1 { font-size: clamp(2rem, 4vw, 3.2rem); max-width: 22ch; }
 .page-head .lede { margin-top: 14px; }
 .page-head a { color: inherit; }
